@@ -10,8 +10,8 @@ const KHA_SOUND_URLS = [
   "https://files.catbox.moe/7cu2hw.m4a"
 ];
 
-// The specific shapes requested
-const KHA_SHAPES = ['Ù€Ø®', 'Ù€Ø®Ù€', 'Ø®Ù€'];
+// The specific shapes requested - FIXED ARABIC ENCODING
+const KHA_SHAPES = ['ـخ', 'ـخـ', 'خـ'];
 // ==========================================
 
 const App = () => {
@@ -250,7 +250,7 @@ const App = () => {
               ))}
             </div>
 
-            <h1 className="text-3xl font-black text-gray-800 mb-2">Ø£Ø´ÙƒØ§Ù„ Ø­Ø±Ù Ø§Ù„Ø®Ø§Ø¡</h1>
+            <h1 className="text-3xl font-black text-gray-800 mb-2">أشكال حرف الخاء</h1>
             <p className="text-gray-500 mb-8 leading-relaxed font-medium">10 Levels of Speed. Are you fast enough?</p>
 
             <button
@@ -268,7 +268,7 @@ const App = () => {
       {gameState === 'gameover' && (
         <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md p-6">
           <div className="bg-white p-10 rounded-[3rem] shadow-2xl text-center max-w-sm w-full">
-            <div className="text-6xl mb-4">ðŸ’¥</div>
+            <div className="text-6xl mb-4">💥</div>
             <h2 className="text-4xl font-black text-gray-800 mb-2">Game Over!</h2>
 
             <div className="bg-gray-100 rounded-2xl p-4 mb-6">
@@ -283,7 +283,7 @@ const App = () => {
             </div>
 
             {score >= highScore && score > 0 && (
-              <p className="text-green-500 font-bold mb-4 animate-bounce">ðŸ† NEW HIGH SCORE! ðŸ†</p>
+              <p className="text-green-500 font-bold mb-4 animate-bounce">🆕 NEW HIGH SCORE! 🆕</p>
             )}
 
             <button
