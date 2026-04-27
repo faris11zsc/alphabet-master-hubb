@@ -1,58 +1,79 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Play, RotateCcw, Heart, Star, Trophy, Zap } from 'lucide-react';
+import { Play, RotateCcw, Heart, Star, Trophy, Zap, ChevronLeft } from 'lucide-react';
 
 // ==========================================
-// AUDIO LINKS FOR THE KHA SOUND
+// FULL ALPHABET CONFIGURATION
 // ==========================================
-const KHA_SOUND_URLS = [
-  "https://files.catbox.moe/ysybmx.m4a",
-  "https://files.catbox.moe/a371ui.m4a",
-  "https://files.catbox.moe/7cu2hw.m4a"
-];
-
-// The specific shapes requested - FIXED ARABIC ENCODING
-const KHA_SHAPES = ['ـخ', 'ـخـ', 'خـ'];
-// ==========================================
+const LETTER_CONFIG = {
+  'alif': { char: 'أ', shapes: ['أ', 'ـأ', 'إ'], sounds: ['ءا.m4a', 'ءو.m4a', 'ءي.m4a'], bg: "from-sky-400 to-blue-600", accent: "text-blue-600" },
+  'ba': { char: 'ب', shapes: ['بـ', 'ـبـ', 'ـب'], sounds: ['ب.m4a', 'بو.m4a', 'بي.m4a'], bg: "from-emerald-400 to-green-600", accent: "text-green-600" },
+  'ta': { char: 'ت', shapes: ['تـ', 'ـتـ', 'ـت'], sounds: ['تا.m4a', 'تو.m4a', 'تي.m4a'], bg: "from-rose-400 to-red-600", accent: "text-red-600" },
+  'tha': { char: 'ث', shapes: ['ثـ', 'ـثـ', 'ـث'], sounds: ['ثا.m4a', 'ثو.m4a', 'ثي.m4a'], bg: "from-purple-400 to-indigo-600", accent: "text-indigo-600" },
+  'jeem': { char: 'ج', shapes: ['جـ', 'ـجـ', 'ـج'], sounds: ['جا.m4a', 'جو.m4a', 'جي.m4a'], bg: "from-orange-400 to-amber-600", accent: "text-amber-600" },
+  'haa': { char: 'ح', shapes: ['حـ', 'ـحـ', 'ـح'], sounds: ['حا.m4a', 'حو.m4a', 'حي.m4a'], bg: "from-teal-400 to-cyan-600", accent: "text-cyan-600" },
+  'kha': { char: 'خ', shapes: ['خـ', 'ـخـ', 'ـخ'], sounds: ['خا.m4a', 'خو.m4a', 'خي.m4a'], bg: "from-slate-700 to-slate-900", accent: "text-slate-800" },
+  'dal': { char: 'د', shapes: ['د', 'ـد', 'د'], sounds: ['دا.m4a', 'دو.m4a', 'دي.m4a'], bg: "from-red-400 to-rose-600", accent: "text-rose-600" },
+  'thal': { char: 'ذ', shapes: ['ذ', 'ـذ', 'ذ'], sounds: ['ذا.m4a', 'ذو.m4a', 'ذي.m4a'], bg: "from-yellow-500 to-orange-600", accent: "text-orange-700" },
+  'raa': { char: 'ر', shapes: ['ر', 'ـر', 'ر'], sounds: ['را.m4a', 'رو.m4a', 'ري.m4a'], bg: "from-lime-400 to-green-600", accent: "text-green-700" },
+  'zay': { char: 'ز', shapes: ['ز', 'ـز', 'ز'], sounds: ['زا.m4a', 'زو.m4a', 'زي.m4a'], bg: "from-green-500 to-teal-700", accent: "text-teal-800" },
+  'seen': { char: 'س', shapes: ['سـ', 'ـسـ', 'ـس'], sounds: ['س.m4a', 'سو.m4a', 'سي.m4a'], bg: "from-blue-400 to-indigo-600", accent: "text-indigo-700" },
+  'sheen': { char: 'ش', shapes: ['شـ', 'ـشـ', 'ـش'], sounds: ['شا.m4a', 'شو.m4a', 'شي.m4a'], bg: "from-violet-400 to-purple-600", accent: "text-purple-700" },
+  'sad': { char: 'ص', shapes: ['صـ', 'ـصـ', 'ـص'], sounds: ['صا.m4a', 'صو.m4a', 'صي.m4a'], bg: "from-stone-400 to-stone-600", accent: "text-stone-700" },
+  'dad': { char: 'ض', shapes: ['ضـ', 'ـضـ', 'ـض'], sounds: ['ضا.m4a', 'ضو.m4a', 'ضي.m4a'], bg: "from-emerald-600 to-green-900", accent: "text-green-900" },
+  'taa': { char: 'ط', shapes: ['طـ', 'ـطـ', 'ـط'], sounds: ['طا.m4a', 'طو.m4a', 'طي.m4a'], bg: "from-amber-600 to-orange-800", accent: "text-orange-900" },
+  'zaa': { char: 'ظ', shapes: ['ظـ', 'ـظـ', 'ـظ'], sounds: ['ظا.m4a', 'ظو.m4a', 'ظي.m4a'], bg: "from-brown-400 to-stone-800", accent: "text-stone-900" },
+  'ayn': { char: 'ع', shapes: ['عـ', 'ـعـ', 'ـع'], sounds: ['عا.m4a', 'عو.m4a', 'عي.m4a'], bg: "from-sky-500 to-blue-800", accent: "text-blue-900" },
+  'ghayn': { char: 'غ', shapes: ['غـ', 'ـغـ', 'ـغ'], sounds: ['غا.m4a', 'غو.m4a', 'غي.m4a'], bg: "from-indigo-400 to-purple-800", accent: "text-purple-900" },
+  'faa': { char: 'ف', shapes: ['فـ', 'ـفـ', 'ـف'], sounds: ['ف.m4a', 'فو.m4a', 'في.m4a'], bg: "from-pink-400 to-rose-600", accent: "text-rose-700" },
+  'qaf': { char: 'ق', shapes: ['قـ', 'ـقـ', 'ـق'], sounds: ['ققا.m4a', 'قو.m4a', 'قي.m4a'], bg: "from-red-600 to-black", accent: "text-red-900" },
+  'kaf': { char: 'ك', shapes: ['كـ', 'ـكـ', 'ـك'], sounds: ['كا.m4a', 'كو.m4a', 'كي.m4a'], bg: "from-blue-300 to-blue-500", accent: "text-blue-700" },
+  'lam': { char: 'ل', shapes: ['لـ', 'ـلـ', 'ـل'], sounds: ['لا.m4a', 'لو.m4a', 'لي.m4a'], bg: "from-cyan-400 to-blue-500", accent: "text-blue-600" },
+  'meem': { char: 'م', shapes: ['مـ', 'ـمـ', 'ـم'], sounds: ['ما.m4a', 'مو.m4a', 'مي.m4a'], bg: "from-violet-500 to-fuchsia-700", accent: "text-fuchsia-800" },
+  'noon': { char: 'ن', shapes: ['نـ', 'ـنـ', 'ـن'], sounds: ['نا.m4a', 'نو.m4a', 'ني.m4a'], bg: "from-green-400 to-emerald-700", accent: "text-emerald-800" },
+  'haa2': { char: 'ه', shapes: ['هـ', 'ـهـ', 'ـه'], sounds: ['ها.m4a', 'هو.m4a', 'هي.m4a'], bg: "from-orange-300 to-yellow-500", accent: "text-yellow-700" },
+  'waw': { char: 'و', shapes: ['و', 'ـو', 'و'], sounds: ['وا.m4a', 'وو.m4a', 'وي.m4a'], bg: "from-blue-600 to-indigo-900", accent: "text-indigo-800" },
+  'yaa': { char: 'ي', shapes: ['يـ', 'ـيـ', 'ـي'], sounds: ['ي.m4a', 'يو.m4a', 'يي.m4a'], bg: "from-teal-300 to-teal-600", accent: "text-teal-800" },
+};
 
 const App = () => {
-  const [gameState, setGameState] = useState('start');
+  const [selectedLetterKey, setSelectedLetterKey] = useState(null);
+  const [gameState, setGameState] = useState('menu');
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [fallingLetters, setFallingLetters] = useState([]);
   const [floatingTexts, setFloatingTexts] = useState([]);
   const [showLevelUp, setShowLevelUp] = useState(false);
 
-  // Safe High Score handling
   const [highScore, setHighScore] = useState(() => {
     try {
-      const saved = localStorage.getItem('khaaHighScore');
+      const saved = localStorage.getItem('alphabetHighScore');
       return saved ? parseInt(saved, 10) : 0;
-    } catch (e) {
-      return 0;
-    }
+    } catch (e) { return 0; }
   });
 
   const audioRefs = useRef([]);
+  const currentLetter = selectedLetterKey ? LETTER_CONFIG[selectedLetterKey] : null;
 
-  // Setup Audio
+  // Setup Audio for the selected letter
   useEffect(() => {
-    audioRefs.current = KHA_SOUND_URLS.map(url => {
-      const audio = new Audio(url);
-      audio.preload = "auto";
-      return audio;
-    });
-  }, []);
+    if (currentLetter) {
+      audioRefs.current = currentLetter.sounds.map(filename => {
+        const audio = new Audio(`/audio/${filename}`);
+        audio.preload = "auto";
+        return audio;
+      });
+    }
+  }, [selectedLetterKey]);
 
-  // Silent unlock for mobile browsers - runs when you click Start
   const unlockAudioEngine = useCallback(() => {
     audioRefs.current.forEach(audio => {
-      audio.muted = true; // Mute it so the user hears nothing
+      audio.muted = true;
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
           audio.pause();
           audio.currentTime = 0;
-          audio.muted = false; // Unmute for future cloning
+          audio.muted = false;
         }).catch(() => {});
       }
     });
@@ -62,92 +83,60 @@ const App = () => {
     if (audioRefs.current.length > 0) {
       const randomIndex = Math.floor(Math.random() * audioRefs.current.length);
       const playInstance = audioRefs.current[randomIndex].cloneNode();
-      playInstance.muted = false; // Ensure clone isn't muted
+      playInstance.muted = false;
       playInstance.play().catch(e => console.warn("Audio blocked", e));
     }
   }, []);
 
-  const saveHighScore = (newScore) => {
-    if (newScore > highScore) {
-      setHighScore(newScore);
-      try {
-        localStorage.setItem('khaaHighScore', newScore.toString());
-      } catch (e) {}
-    }
-  };
-
-  const startGame = () => {
+  const startGame = (letterKey) => {
+    setSelectedLetterKey(letterKey);
     setScore(0);
     setLives(3);
     setFallingLetters([]);
     setFloatingTexts([]);
     setGameState('playing');
-
-    // Unlock audio silently on the first user interaction
     unlockAudioEngine();
   };
 
-  // --- 10-TIER HARDCORE LEVEL SCALING LOGIC ---
-  const getLevelData = (s) => {
-    if (s < 10) return { level: 1, bg: "from-sky-100 to-sky-300", text: "text-sky-700", name: "Beginner" };
-    if (s < 20) return { level: 2, bg: "from-green-100 to-green-300", text: "text-green-700", name: "Novice" };
-    if (s < 30) return { level: 3, bg: "from-yellow-100 to-yellow-300", text: "text-yellow-700", name: "Rookie" };
-    if (s < 40) return { level: 4, bg: "from-orange-100 to-orange-300", text: "text-orange-700", name: "Fast" };
-    if (s < 50) return { level: 5, bg: "from-amber-300 to-orange-500", text: "text-amber-900", name: "Expert" };
-    if (s < 60) return { level: 6, bg: "from-red-300 to-red-500", text: "text-red-900", name: "Pro" };
-    if (s < 70) return { level: 7, bg: "from-rose-400 to-pink-600", text: "text-pink-100", name: "Master" };
-    if (s < 80) return { level: 8, bg: "from-purple-400 to-purple-700", text: "text-purple-100", name: "Grandmaster" };
-    if (s < 90) return { level: 9, bg: "from-indigo-600 to-blue-900", text: "text-indigo-100", name: "Epic" };
-    return { level: 10, bg: "from-slate-900 to-black", text: "text-red-500", name: "Impossible" };
+  const backToMenu = () => {
+    setGameState('menu');
+    setSelectedLetterKey(null);
   };
 
-  const currentLevelData = getLevelData(score);
+  // --- Level Logic ---
+  const getLevelData = (s) => {
+    if (s < 10) return { level: 1, name: "Beginner", speed: 2.5 };
+    if (s < 20) return { level: 2, name: "Novice", speed: 2.2 };
+    if (s < 30) return { level: 3, name: "Rookie", speed: 2.0 };
+    if (s < 40) return { level: 4, name: "Fast", speed: 1.8 };
+    if (s < 50) return { level: 5, name: "Expert", speed: 1.6 };
+    return { level: 6, name: "Master", speed: 1.4 };
+  };
 
-  // Trigger level up animation at the 10-level thresholds
-  useEffect(() => {
-    const levelThresholds = [10, 20, 30, 40, 50, 60, 70, 80, 90];
-    if (score > 0 && levelThresholds.includes(score)) {
-      setShowLevelUp(true);
-      setTimeout(() => setShowLevelUp(false), 2000);
-    }
-  }, [score]);
+  const level = getLevelData(score);
 
-  // Main Spawning Loop - FAST
   useEffect(() => {
     if (gameState !== 'playing') return;
-
-    // Harder Spawn Rate
-    const currentSpawnRate = Math.max(250, 750 - Math.floor(score / 5) * 35);
-
+    const currentSpawnRate = Math.max(300, 1000 - (score * 15));
     const spawnInterval = setInterval(() => {
-      setFallingLetters((prev) => {
-        // Harder Fall Speed
-        const fallSpeed = Math.max(0.8, 2.5 - (score * 0.025));
-        const randomShape = KHA_SHAPES[Math.floor(Math.random() * KHA_SHAPES.length)];
-
-        return [
-          ...prev,
-          {
-            id: Date.now() + Math.random(),
-            left: Math.floor(Math.random() * 75) + 10,
-            duration: fallSpeed,
-            shape: randomShape
-          },
-        ];
-      });
+      setFallingLetters((prev) => [
+        ...prev,
+        {
+          id: Date.now() + Math.random(),
+          left: Math.floor(Math.random() * 80) + 10,
+          duration: level.speed,
+          shape: currentLetter.shapes[Math.floor(Math.random() * currentLetter.shapes.length)]
+        },
+      ]);
     }, currentSpawnRate);
-
     return () => clearInterval(spawnInterval);
-  }, [gameState, Math.floor(score / 5)]);
+  }, [gameState, score, selectedLetterKey]);
 
   const handleCatch = (id, clientX, clientY) => {
     if (gameState !== 'playing') return;
-
     playRandomSound();
-
     setFallingLetters((prev) => prev.filter((l) => l.id !== id));
     setScore((prev) => prev + 1);
-
     const newFloatingText = { id: Date.now(), x: clientX, y: clientY };
     setFloatingTexts((prev) => [...prev, newFloatingText]);
     setTimeout(() => {
@@ -162,187 +151,115 @@ const App = () => {
       const newLives = prev - 1;
       if (newLives <= 0) {
         setGameState('gameover');
-        saveHighScore(score);
+        if (score > highScore) {
+          setHighScore(score);
+          localStorage.setItem('alphabetHighScore', score.toString());
+        }
       }
       return newLives;
     });
   };
 
   return (
-    <div className={`relative w-full h-screen overflow-hidden bg-gradient-to-b ${currentLevelData.bg} font-sans touch-none select-none transition-colors duration-1000`}>
+    <div className={`relative w-full h-screen overflow-hidden font-sans touch-none select-none transition-all duration-1000 bg-gradient-to-b ${currentLetter ? currentLetter.bg : 'from-slate-800 to-slate-950'}`}>
+      
       <style>
         {`
-          @keyframes fall {
-            0% { transform: translateY(-100px) rotate(0deg); }
-            100% { transform: translateY(110vh) rotate(15deg); }
-          }
-          @keyframes popOut {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-60px) scale(1.6); opacity: 0; }
-          }
-          @keyframes slideInFade {
-            0% { transform: scale(0.8) translateY(-20px); opacity: 0; }
-            10% { transform: scale(1) translateY(0); opacity: 1; }
-            90% { transform: scale(1) translateY(0); opacity: 1; }
-            100% { transform: scale(1.2) translateY(-20px); opacity: 0; }
-          }
+          @keyframes fall { 0% { transform: translateY(-100px); } 100% { transform: translateY(110vh); } }
+          @keyframes popOut { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
           .letter-fall { animation: fall linear forwards; }
           .score-float { animation: popOut 0.8s ease-out forwards; }
-          .level-up-banner { animation: slideInFade 2s ease-in-out forwards; }
+          .arabic-font { font-family: 'Amiri', serif; }
         `}
       </style>
 
-      {/* Gameplay Stats Header */}
-      {gameState === 'playing' && (
-        <div className="absolute top-6 left-0 w-full px-6 flex justify-between items-start z-50 pointer-events-none">
-          <div className="flex flex-col gap-2">
-            <div className="bg-white/90 backdrop-blur px-4 py-2 rounded-2xl shadow-lg border-2 border-white/50 flex items-center gap-2">
-              <Star className="text-yellow-500 fill-yellow-500 w-6 h-6" />
-              <span className="text-2xl font-black text-gray-800">{score}</span>
-            </div>
-            {/* Level Indicator */}
-            <div className={`px-3 py-1 rounded-xl shadow-md font-bold text-sm border-2 border-white/30 bg-white/70 backdrop-blur flex items-center gap-1 ${currentLevelData.text}`}>
-              <Zap size={14} className="fill-current" />
-              Lv.{currentLevelData.level} {currentLevelData.name}
-            </div>
+      {/* MENU SCREEN */}
+      {gameState === 'menu' && (
+        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-start bg-slate-900/40 backdrop-blur-md p-8 overflow-y-auto pb-20">
+          <div className="text-center mb-10 mt-10">
+            <h1 className="text-5xl font-black text-white drop-shadow-lg mb-2">Alphabet Master</h1>
+            <p className="text-sky-300 font-bold tracking-widest uppercase">Choose a letter to start</p>
           </div>
 
-          <div className="flex gap-2">
-            {[...Array(3)].map((_, i) => (
-              <Heart key={i} className={`w-8 h-8 transition-all duration-300 ${i < lives ? 'text-red-500 fill-red-500 scale-110' : 'text-gray-400 opacity-50'}`} />
+          <div className="grid grid-cols-4 md:grid-cols-7 gap-4 w-full max-w-4xl">
+            {Object.keys(LETTER_CONFIG).map((key) => (
+              <button
+                key={key}
+                onClick={() => startGame(key)}
+                className="aspect-square bg-white/10 hover:bg-white/20 border-2 border-white/20 rounded-2xl flex flex-col items-center justify-center transition-all transform hover:scale-105 active:scale-95 group"
+              >
+                <span className="text-4xl font-bold text-white group-hover:text-yellow-300 transition-colors arabic-font">
+                  {LETTER_CONFIG[key].char}
+                </span>
+                <span className="text-[10px] text-white/50 uppercase mt-1 font-bold">{key}</span>
+              </button>
             ))}
           </div>
         </div>
       )}
 
-      {/* TRANSPARENT Level Up Banner Popup */}
-      {showLevelUp && (
-        <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
-          <div className="level-up-banner flex flex-col items-center justify-center">
-            {/* Transparent text with drop shadow so it doesn't block the view */}
-            <h2 className="text-6xl md:text-8xl font-black italic tracking-widest uppercase text-white/50 drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
-              Level {currentLevelData.level}
-            </h2>
-            <p className="text-3xl md:text-4xl font-bold text-yellow-300/70 drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)] mt-2">
-              {currentLevelData.name} Speed!
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Start Screen */}
-      {gameState === 'start' && (
-        <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/20 backdrop-blur-sm p-6">
-          <div className="bg-white p-8 rounded-[2.5rem] shadow-2xl border-b-8 border-orange-200 text-center max-w-sm w-full relative overflow-hidden">
-
-            {/* Best Score Badge */}
-            {highScore > 0 && (
-              <div className="absolute top-4 right-4 bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 border border-yellow-300">
-                <Trophy size={14} className="fill-yellow-600" /> Best: {highScore}
-              </div>
-            )}
-
-            <div className="flex justify-center gap-2 mb-6 mt-4">
-              {KHA_SHAPES.map((shape, idx) => (
-                <div key={idx} className="w-16 h-16 bg-sky-100 rounded-xl flex items-center justify-center shadow-inner border-2 border-sky-200">
-                  <span className="text-4xl text-sky-600 font-bold">{shape}</span>
-                </div>
+      {/* GAMEPLAY UI */}
+      {gameState === 'playing' && (
+        <>
+          <button onClick={backToMenu} className="absolute top-6 left-6 z-[110] bg-white/20 hover:bg-white/40 p-3 rounded-2xl text-white transition-all backdrop-blur-md">
+            <ChevronLeft size={24} />
+          </button>
+          
+          <div className="absolute top-6 right-6 flex flex-col items-end gap-2 z-50 pointer-events-none">
+            <div className="bg-white/90 backdrop-blur px-4 py-2 rounded-2xl shadow-lg flex items-center gap-2 border-2 border-white/50">
+              <Star className="text-yellow-500 fill-yellow-500 w-6 h-6" />
+              <span className="text-2xl font-black text-gray-800">{score}</span>
+            </div>
+            <div className="flex gap-1">
+              {[...Array(3)].map((_, i) => (
+                <Heart key={i} className={`w-6 h-6 ${i < lives ? 'text-red-500 fill-red-500' : 'text-gray-400 opacity-30'}`} />
               ))}
             </div>
-
-            <h1 className="text-3xl font-black text-gray-800 mb-2">أشكال حرف الخاء</h1>
-            <p className="text-gray-500 mb-8 leading-relaxed font-medium">10 Levels of Speed. Are you fast enough?</p>
-
-            <button
-              onClick={startGame}
-              className="w-full bg-sky-500 hover:bg-sky-600 text-white py-5 rounded-2xl text-2xl font-black shadow-lg transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
-            >
-              <Play className="fill-white w-8 h-8" />
-              START GAME
-            </button>
           </div>
-        </div>
+
+          <div className="absolute inset-0">
+            {fallingLetters.map((l) => (
+              <button
+                key={l.id}
+                onPointerDown={(e) => handleCatch(l.id, e.clientX, e.clientY)}
+                onAnimationEnd={() => handleMiss(l.id)}
+                style={{ left: `${l.left}%`, animationDuration: `${l.duration}s` }}
+                className="letter-fall absolute cursor-pointer p-8 -ml-8 outline-none touch-none z-10"
+              >
+                <div className="w-20 h-20 bg-white rounded-2xl shadow-2xl flex items-center justify-center border-b-4 border-gray-200">
+                  <span className={`text-5xl font-bold ${currentLetter.accent} arabic-font`}>{l.shape}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </>
       )}
 
-      {/* Game Over Screen */}
+      {/* GAME OVER */}
       {gameState === 'gameover' && (
-        <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md p-6">
-          <div className="bg-white p-10 rounded-[3rem] shadow-2xl text-center max-w-sm w-full">
-            <div className="text-6xl mb-4">💥</div>
-            <h2 className="text-4xl font-black text-gray-800 mb-2">Game Over!</h2>
-
-            <div className="bg-gray-100 rounded-2xl p-4 mb-6">
-              <p className="text-gray-500 font-bold uppercase text-sm tracking-wider">Your Score</p>
-              <p className="text-5xl font-black text-orange-600 my-1">{score}</p>
-              <p className="text-md font-bold text-gray-400 mb-2">Reached Level {currentLevelData.level}</p>
-              <div className="h-px bg-gray-300 w-full my-3"></div>
-              <p className="text-gray-500 font-bold flex justify-center items-center gap-1">
-                <Trophy size={18} className={score >= highScore && score > 0 ? "text-yellow-500 fill-yellow-500" : "text-gray-400"} />
-                High Score: <span className="text-gray-800">{highScore}</span>
-              </p>
+        <div className="absolute inset-0 z-[120] flex items-center justify-center bg-black/80 backdrop-blur-xl p-6">
+          <div className="bg-white p-10 rounded-[3rem] text-center max-w-sm w-full shadow-2xl">
+            <h2 className="text-4xl font-black text-gray-800 mb-6">Game Over!</h2>
+            <div className="bg-slate-100 p-6 rounded-3xl mb-8">
+              <p className="text-gray-400 font-bold uppercase tracking-widest text-xs mb-1">Total Score</p>
+              <p className="text-6xl font-black text-slate-800">{score}</p>
             </div>
-
-            {score >= highScore && score > 0 && (
-              <p className="text-green-500 font-bold mb-4 animate-bounce">🆕 NEW HIGH SCORE! 🆕</p>
-            )}
-
-            <button
-              onClick={startGame}
-              className="w-full bg-green-500 hover:bg-green-600 text-white py-5 rounded-2xl text-2xl font-black shadow-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2"
-            >
-              <RotateCcw className="w-6 h-6" />
-              TRY AGAIN
+            <button onClick={() => startGame(selectedLetterKey)} className="w-full bg-blue-600 text-white py-5 rounded-2xl text-xl font-bold mb-3 flex items-center justify-center gap-2">
+              <RotateCcw size={20} /> TRY AGAIN
             </button>
+            <button onClick={backToMenu} className="w-full text-gray-500 font-bold py-2">BACK TO MENU</button>
           </div>
         </div>
       )}
 
-      {/* Falling Elements Area */}
-      <div className="absolute inset-0">
-        {fallingLetters.map((l) => (
-          <button
-            key={l.id}
-            onPointerDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation(); // Forces immediate reaction bypassing DOM lag
-              handleCatch(l.id, e.clientX, e.clientY);
-            }}
-            onAnimationEnd={() => handleMiss(l.id)}
-            style={{
-              left: `${l.left}%`,
-              animationDuration: `${l.duration}s`,
-              WebkitTapHighlightColor: 'transparent' // Prevents mobile browser highlight delay
-            }}
-            // NEW HITBOX LOGIC: "p-8 -ml-8" adds a massive invisible 32px hit-zone around the box.
-            // It looks exactly the same, but gives the user a massive forgiveness area for fast clicks!
-            className="letter-fall absolute cursor-pointer outline-none touch-none z-10 p-8 -ml-8 group"
-          >
-            {/* The visual box itself. "pointer-events-none" guarantees the click lands on the giant outer wrapper */}
-            <div className="w-20 h-20 bg-white rounded-2xl shadow-2xl border-b-4 border-gray-200 flex items-center justify-center transition-transform group-active:scale-75 pointer-events-none">       
-              <span className="text-5xl font-bold text-slate-800">{l.shape}</span>
-            </div>
-          </button>
-        ))}
-
-        {/* The +1 score popups */}
-        {floatingTexts.map((t) => (
-          <div
-            key={t.id}
-            className="score-float absolute pointer-events-none text-4xl font-black text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] z-20"
-            style={{ left: t.x - 20, top: t.y - 40 }}
-          >
-            +1
-          </div>
-        ))}
-      </div>
-
-      {/* Watermark Logo in Bottom Left */}
-      <div className="absolute bottom-6 left-6 z-50 pointer-events-none flex flex-col items-start opacity-60">
-        <img src="/logo.png" alt="LightKnight Logo" className="w-24 h-auto mb-1 drop-shadow-md" />
+      {/* BRANDING */}
+      <div className="absolute bottom-6 left-6 z-[150] pointer-events-none flex flex-col items-start opacity-70">
+        <img src="/logo.png" alt="LightKnight Logo" className="w-20 h-auto mb-1 drop-shadow-md" />
         <p className="text-white/80 text-[10px] font-medium tracking-widest uppercase">
           by <span className="font-bold">FarisAura</span>
         </p>
       </div>
+
     </div>
   );
 };
