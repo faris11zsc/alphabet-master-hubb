@@ -335,6 +335,14 @@ const App = () => {
           </div>
         ))}
       </div>
+
+      {/* Watermark Logo in Bottom Left */}
+      <div className="absolute bottom-6 left-6 z-50 pointer-events-none flex flex-col items-start opacity-60">
+        <img src="/logo.png" alt="LightKnight Logo" className="w-24 h-auto mb-1 drop-shadow-md" />
+        <p className="text-white/80 text-[10px] font-medium tracking-widest uppercase">
+          by <span className="font-bold">FarisAura</span>
+        </p>
+      </div>
     </div>
   );
 };
