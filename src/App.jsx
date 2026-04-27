@@ -11,7 +11,7 @@ const LETTER_CONFIG = {
   'tha': { char: 'ث', shapes: ['ثـ', 'ـثـ', 'ـث'], sounds: ['ثا.m4a', 'ثو.m4a', 'ثي.m4a'], bg: "from-purple-500 via-indigo-600 to-violet-900", accent: "text-indigo-600", border: "border-indigo-200" },
   'jeem': { char: 'ج', shapes: ['جـ', 'ـجـ', 'ـج'], sounds: ['جا.m4a', 'جو.m4a', 'جي.m4a'], bg: "from-orange-500 via-amber-600 to-yellow-800", accent: "text-amber-600", border: "border-amber-200" },
   'haa': { char: 'ح', shapes: ['حـ', 'ـحـ', 'ـح'], sounds: ['حا.m4a', 'حو.m4a', 'حي.m4a'], bg: "from-teal-500 via-cyan-600 to-blue-700", accent: "text-cyan-600", border: "border-cyan-200" },
-  'kha': { char: 'خ', shapes: ['خـ', 'ـجـ', 'ـخ'], sounds: ['خا.m4a', 'خو.m4a', 'خي.m4a'], bg: "from-slate-700 via-slate-800 to-black", accent: "text-slate-800", border: "border-slate-400" },
+  'kha': { char: 'خ', shapes: ['خـ', 'ـخـ', 'ـخ'], sounds: ['خا.m4a', 'خو.m4a', 'خي.m4a'], bg: "from-slate-700 via-slate-800 to-black", accent: "text-slate-800", border: "border-slate-400" },
   'dal': { char: 'د', shapes: ['د', 'ـد', 'د'], sounds: ['دا.m4a', 'دو.m4a', 'دي.m4a'], bg: "from-red-500 via-rose-600 to-pink-800", accent: "text-rose-600", border: "border-rose-200" },
   'thal': { char: 'ذ', shapes: ['ذ', 'ـذ', 'ذ'], sounds: ['ذا.m4a', 'ذو.m4a', 'ذي.m4a'], bg: "from-yellow-400 via-orange-500 to-amber-700", accent: "text-orange-700", border: "border-orange-200" },
   'raa': { char: 'ر', shapes: ['ر', 'ـر', 'ر'], sounds: ['را.m4a', 'رو.m4a', 'ري.m4a'], bg: "from-lime-500 via-green-600 to-emerald-800", accent: "text-green-700", border: "border-green-200" },
@@ -52,7 +52,44 @@ const App = () => {
   });
 
   const audioRefs = useRef([]);
+  const bgMusicRef = useRef(null);
   const currentLetter = selectedLetterKey ? LETTER_CONFIG[selectedLetterKey] : null;
+
+  // Setup Dashboard Background Music
+  useEffect(() => {
+    bgMusicRef.current = new Audio('/audio/abc_song.mp3');
+    bgMusicRef.current.loop = true;
+    
+    // Attempt play on mount (usually fails due to browser policy)
+    if (gameState === 'menu') {
+      bgMusicRef.current.play().catch(() => {});
+    }
+
+    return () => {
+      bgMusicRef.current?.pause();
+    };
+  }, []);
+
+  // Control Music based on state
+  useEffect(() => {
+    if (gameState === 'menu') {
+      bgMusicRef.current?.play().catch(() => {});
+    } else {
+      bgMusicRef.current?.pause();
+      if (bgMusicRef.current) bgMusicRef.current.currentTime = 0;
+    }
+  }, [gameState]);
+
+  // Global click handler to trigger music (bypasses browser autoplay block)
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      if (gameState === 'menu' && bgMusicRef.current?.paused) {
+        bgMusicRef.current.play().catch(() => {});
+      }
+    };
+    window.addEventListener('click', handleFirstInteraction);
+    return () => window.removeEventListener('click', handleFirstInteraction);
+  }, [gameState]);
 
   // Setup Audio for the selected letter
   useEffect(() => {
@@ -298,8 +335,14 @@ const App = () => {
       )}
 
       {/* WATERMARK BRANDING */}
-      <div className="absolute bottom-8 left-8 z-[250] pointer-events-none flex flex-col items-start transition-opacity opacity-40 hover:opacity-100">
-        <img src="/logo.png" alt="LightKnight Logo" className="w-24 h-auto mb-2 drop-shadow-xl contrast-125" />
+      <div className={`absolute bottom-8 left-8 z-[250] transition-all duration-500 ${gameState === 'menu' ? 'opacity-60' : 'opacity-20 pointer-events-none'}`}>
+        {gameState === 'menu' ? (
+          <a href="https://wa.me/201554712241" target="_blank" rel="noopener noreferrer" className="cursor-pointer group">
+            <img src="/logo.png" alt="LightKnight Logo" className="w-24 h-auto mb-2 drop-shadow-xl contrast-125 group-hover:scale-110 transition-transform" />
+          </a>
+        ) : (
+          <img src="/logo.png" alt="LightKnight Logo" className="w-24 h-auto mb-2 drop-shadow-xl contrast-125" />
+        )}
         <p className="text-white/60 text-[10px] font-black tracking-[0.4em] uppercase drop-shadow-md">
           by <span className="text-white">FarisAura</span>
         </p>
