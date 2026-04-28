@@ -79,8 +79,9 @@ const App = () => {
     }
   }, [gameState]);
 
-  // Game Logic Speed & Scaling
+  // --- HARDER 8-LEVEL CAP LOGIC ---
   const getLevelData = (s) => {
+    // Speed and Spawn rate cap at Level 8 (score 70-80)
     if (s < 10) return { level: 1, name: "Beginner", speed: 2.0, spawnRate: 850, color: "text-sky-300" };
     if (s < 20) return { level: 2, name: "Novice", speed: 1.7, spawnRate: 700, color: "text-green-300" };
     if (s < 30) return { level: 3, name: "Rookie", speed: 1.5, spawnRate: 600, color: "text-yellow-300" };
@@ -88,15 +89,14 @@ const App = () => {
     if (s < 50) return { level: 5, name: "Expert", speed: 1.1, spawnRate: 450, color: "text-red-300" };
     if (s < 60) return { level: 6, name: "Pro", speed: 1.0, spawnRate: 400, color: "text-pink-300" };
     if (s < 70) return { level: 7, name: "Master", speed: 0.9, spawnRate: 350, color: "text-purple-300" };
-    if (s < 80) return { level: 8, name: "Grandmaster", speed: 0.8, spawnRate: 300, color: "text-indigo-300" };
-    if (s < 90) return { level: 9, name: "Epic", speed: 0.7, spawnRate: 260, color: "text-cyan-300" };
-    return { level: 10, name: "Impossible", speed: 0.5, spawnRate: 220, color: "text-white" };
+    // Level 8 and beyond use the same maximum speed
+    return { level: 8, name: "Grandmaster", speed: 0.8, spawnRate: 300, color: "text-indigo-300" };
   };
 
   const currentLevel = getLevelData(score);
 
   useEffect(() => {
-    const thresholds = [10, 20, 30, 40, 50, 60, 70, 80, 90];
+    const thresholds = [10, 20, 30, 40, 50, 60, 70];
     if (score > 0 && thresholds.includes(score)) {
       setShowLevelUp(true);
       setTimeout(() => setShowLevelUp(false), 2000);
@@ -176,7 +176,7 @@ const App = () => {
   };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden font-sans touch-none select-none transition-all duration-1000">
+    <div className="relative w-full h-screen overflow-hidden font-sans touch-none select-none transition-all duration-1000 bg-[#F5F5DC]">
       
       <style>
         {`
@@ -193,18 +193,22 @@ const App = () => {
             border: 4px solid #D4AF37;
             box-shadow: 0 0 50px rgba(212, 175, 55, 0.4);
           }
+          .splash-bg { background-color: #000; background-position: center; background-size: cover; background-repeat: no-repeat; }
         `}
       </style>
 
-      {/* SPLASH SCREEN */}
+      {/* SPLASH SCREEN (Optimized Loading) */}
       {gameState === 'splash' && (
         <div className="absolute inset-0 z-[500] flex flex-col items-center justify-center bg-black overflow-hidden">
-          <img 
-            src={isMobile ? "/splash_mobile.png" : "/splash_pc.png"} 
-            className="absolute inset-0 w-full h-full object-cover opacity-80" 
-            alt="Splash Background" 
+          {/* Quick-loading low-res fallback or background style */}
+          <div 
+            className="absolute inset-0 splash-bg transition-opacity duration-1000"
+            style={{ 
+              backgroundImage: `url(${isMobile ? "/splash_mobile.png" : "/splash_pc.png"})`,
+              opacity: 0.8
+            }} 
           />
-          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 bg-black/40" />
           <button 
             onClick={() => { setGameState('menu'); bgMusicRef.current?.play().catch(() => {}); }}
             className="group relative px-16 py-6 bg-[#800000] text-[#D4AF37] text-3xl font-black rounded-3xl shadow-[0_0_40px_rgba(128,0,0,0.6)] transition-all transform hover:scale-105 active:scale-95 border-2 border-[#D4AF37] z-[510] tracking-widest italic"
@@ -216,14 +220,16 @@ const App = () => {
 
       {/* DASHBOARD (MENU) */}
       {gameState === 'menu' && (
-        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-start p-8 bg-[#F5F5DC] overflow-y-auto pb-24">
+        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-start p-8 bg-[#F5F5DC] overflow-y-auto scroll-smooth">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none scale-150">
              <div className="relative w-96 h-96 shamsa-medallion rounded-full animate-[rotateShamsa_120s_linear_infinite]" />
           </div>
+          
           <div className="text-center mb-16 mt-16 relative z-10">
             <h1 className="text-7xl font-black text-[#800000] drop-shadow-sm mb-4 tracking-tighter arabic-font">Alphabet Master</h1>
             <div className="h-1 w-48 bg-[#D4AF37] mx-auto rounded-full" />
           </div>
+
           <div className="grid grid-cols-4 md:grid-cols-7 gap-6 w-full max-w-5xl relative z-10">
             {Object.keys(LETTER_CONFIG).map((key) => (
               <button
@@ -238,6 +244,9 @@ const App = () => {
               </button>
             ))}
           </div>
+
+          {/* EXTRA SCROLL SPACE (Prevent logo overlap) */}
+          <div className="h-[60vh] w-full shrink-0" />
         </div>
       )}
 
@@ -263,7 +272,7 @@ const App = () => {
           {showLevelUp && (
             <div className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none">
               <div className="level-up-banner text-center">
-                <h2 className="text-8xl font-black text-white drop-shadow-2xl tracking-tighter uppercase italic">LEVEL {currentLevel.level}</h2>
+                <h2 className="text-8xl font-black text-white drop-shadow-2xl tracking-tighter uppercase italic text-shadow-lg">LEVEL {currentLevel.level}</h2>
                 <div className={`mt-2 px-8 py-2 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-md text-2xl font-black uppercase tracking-[0.4em] ${currentLevel.color}`}>{currentLevel.name}</div>
               </div>
             </div>
@@ -294,7 +303,7 @@ const App = () => {
       {gameState === 'gameover' && (
         <div className="absolute inset-0 z-[600] flex items-center justify-center bg-black/95 backdrop-blur-3xl p-6">
           <div className="bg-white p-12 rounded-[3.5rem] text-center max-w-sm w-full shadow-2xl border-b-[12px] border-slate-200">
-            <h2 className="text-5xl font-black text-slate-800 mb-6 tracking-tighter italic">GAME OVER</h2>
+            <h2 className="text-5xl font-black text-slate-800 mb-6 tracking-tighter italic uppercase">GAME OVER</h2>
             <div className="bg-slate-50 p-8 rounded-[2.5rem] mb-10 shadow-inner">
               <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] mb-2">Final Score</p>
               <p className="text-7xl font-black text-slate-900 leading-none">{score}</p>
@@ -307,15 +316,15 @@ const App = () => {
             <button onClick={() => startGame(selectedLetterKey)} className="w-full bg-slate-900 hover:bg-black text-white py-6 rounded-3xl text-2xl font-black shadow-xl transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3 mb-4">
               <RotateCcw size={24} /> TRY AGAIN
             </button>
-            <button onClick={backToMenu} className="w-full text-slate-400 font-black uppercase tracking-widest text-xs hover:text-slate-600 transition-colors">Return to Menu</button>
+            <button onClick={backToMenu} className="w-full text-slate-400 font-black uppercase tracking-widest text-[10px] hover:text-slate-600 transition-colors">Return to Menu</button>
           </div>
         </div>
       )}
 
       {/* BRANDING LOGO */}
-      <div className={`absolute bottom-8 left-8 z-[1000] transition-all duration-500 ${gameState === 'playing' ? 'opacity-[0.05] pointer-events-none' : 'opacity-40'}`}>
+      <div className={`absolute bottom-8 left-8 z-[1000] transition-all duration-500 ${gameState === 'playing' ? 'opacity-[0.02] pointer-events-none' : 'opacity-30'}`}>
         <a href="https://api.whatsapp.com/send/?phone=201554712241&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
-          <img src="/logo.png" className="w-24 h-auto mb-2 contrast-125 hover:scale-110 transition-transform" />
+          <img src="/logo.png" className="w-24 h-auto mb-2 contrast-125 hover:scale-105 transition-transform" />
         </a>
         <p className="text-stone-800 text-[10px] font-black tracking-[0.4em] uppercase">by <span className="font-bold">FarisAura</span></p>
       </div>
