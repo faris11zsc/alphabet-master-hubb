@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Play, RotateCcw, Heart, Star, Trophy, Zap, ChevronLeft, Volume2 } from 'lucide-react';
+import { Play, RotateCcw, Heart, Star, Trophy, Zap, ChevronLeft } from 'lucide-react';
 
 // ==========================================
 // ENHANCED ALPHABET CONFIGURATION
@@ -37,12 +37,13 @@ const LETTER_CONFIG = {
 
 const App = () => {
   const [selectedLetterKey, setSelectedLetterKey] = useState(null);
-  const [gameState, setGameState] = useState('splash'); // New state: splash
+  const [gameState, setGameState] = useState('splash');
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [fallingLetters, setFallingLetters] = useState([]);
   const [floatingTexts, setFloatingTexts] = useState([]);
   const [showLevelUp, setShowLevelUp] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const [highScore, setHighScore] = useState(() => {
     try {
@@ -55,52 +56,41 @@ const App = () => {
   const bgMusicRef = useRef(null);
   const currentLetter = selectedLetterKey ? LETTER_CONFIG[selectedLetterKey] : null;
 
-  // Setup Dashboard Background Music
+  // Detect Device Type
+  useEffect(() => {
+    const checkDevice = () => setIsMobile(window.innerWidth < 768);
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
+
+  // Background Music Setup
   useEffect(() => {
     bgMusicRef.current = new Audio('/audio/abc_song.mp3');
     bgMusicRef.current.loop = true;
-    
-    return () => {
-      bgMusicRef.current?.pause();
-    };
+    return () => bgMusicRef.current?.pause();
   }, []);
 
-  // Music control logic
   useEffect(() => {
     if (gameState === 'menu') {
-      const playPromise = bgMusicRef.current?.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => { /* Autoplay blocked */ });
-      }
+      bgMusicRef.current?.play().catch(() => {});
     } else {
       bgMusicRef.current?.pause();
-      if (bgMusicRef.current) bgMusicRef.current.currentTime = 0;
     }
   }, [gameState]);
 
-  // Setup Audio for the selected letter
-  useEffect(() => {
-    if (currentLetter) {
-      audioRefs.current = currentLetter.sounds.map(filename => {
-        const audio = new Audio(`/audio/${filename}`);
-        audio.preload = "auto";
-        return audio;
-      });
-    }
-  }, [selectedLetterKey]);
-
-  // --- HARDER 10-TIER SCALING ---
+  // Game Logic Speed & Scaling
   const getLevelData = (s) => {
-    if (s < 10) return { level: 1, name: "Beginner", speed: 2.2, spawnRate: 900, color: "text-sky-300" };
-    if (s < 20) return { level: 2, name: "Novice", speed: 1.9, spawnRate: 750, color: "text-green-300" };
-    if (s < 30) return { level: 3, name: "Rookie", speed: 1.7, spawnRate: 650, color: "text-yellow-300" };
-    if (s < 40) return { level: 4, name: "Fast", speed: 1.5, spawnRate: 550, color: "text-orange-300" };
-    if (s < 50) return { level: 5, name: "Expert", speed: 1.3, spawnRate: 480, color: "text-red-300" };
-    if (s < 60) return { level: 6, name: "Pro", speed: 1.1, spawnRate: 420, color: "text-pink-300" };
-    if (s < 70) return { level: 7, name: "Master", speed: 1.0, spawnRate: 370, color: "text-purple-300" };
-    if (s < 80) return { level: 8, name: "Grandmaster", speed: 0.9, spawnRate: 330, color: "text-indigo-300" };
-    if (s < 90) return { level: 9, name: "Epic", speed: 0.8, spawnRate: 300, color: "text-cyan-300" };
-    return { level: 10, name: "Impossible", speed: 0.6, spawnRate: 260, color: "text-white" };
+    if (s < 10) return { level: 1, name: "Beginner", speed: 2.0, spawnRate: 850, color: "text-sky-300" };
+    if (s < 20) return { level: 2, name: "Novice", speed: 1.7, spawnRate: 700, color: "text-green-300" };
+    if (s < 30) return { level: 3, name: "Rookie", speed: 1.5, spawnRate: 600, color: "text-yellow-300" };
+    if (s < 40) return { level: 4, name: "Fast", speed: 1.3, spawnRate: 500, color: "text-orange-300" };
+    if (s < 50) return { level: 5, name: "Expert", speed: 1.1, spawnRate: 450, color: "text-red-300" };
+    if (s < 60) return { level: 6, name: "Pro", speed: 1.0, spawnRate: 400, color: "text-pink-300" };
+    if (s < 70) return { level: 7, name: "Master", speed: 0.9, spawnRate: 350, color: "text-purple-300" };
+    if (s < 80) return { level: 8, name: "Grandmaster", speed: 0.8, spawnRate: 300, color: "text-indigo-300" };
+    if (s < 90) return { level: 9, name: "Epic", speed: 0.7, spawnRate: 260, color: "text-cyan-300" };
+    return { level: 10, name: "Impossible", speed: 0.5, spawnRate: 220, color: "text-white" };
   };
 
   const currentLevel = getLevelData(score);
@@ -113,11 +103,6 @@ const App = () => {
     }
   }, [score]);
 
-  const enterHub = () => {
-    setGameState('menu');
-    bgMusicRef.current?.play().catch(() => {});
-  };
-
   const startGame = (letterKey) => {
     setSelectedLetterKey(letterKey);
     setScore(0);
@@ -125,6 +110,14 @@ const App = () => {
     setFallingLetters([]);
     setFloatingTexts([]);
     setGameState('playing');
+    
+    // Setup Audio for the selected letter
+    const config = LETTER_CONFIG[letterKey];
+    audioRefs.current = config.sounds.map(filename => {
+      const audio = new Audio(`/audio/${filename}`);
+      audio.preload = "auto";
+      return audio;
+    });
   };
 
   const backToMenu = () => {
@@ -141,7 +134,7 @@ const App = () => {
           id: Date.now() + Math.random(),
           left: Math.floor(Math.random() * 80) + 10,
           duration: currentLevel.speed,
-          shape: currentLetter.shapes[Math.floor(Math.random() * currentLetter.shapes.length)]
+          shape: LETTER_CONFIG[selectedLetterKey].shapes[Math.floor(Math.random() * 3)]
         },
       ]);
     }, currentLevel.spawnRate);
@@ -151,7 +144,6 @@ const App = () => {
   const handleCatch = (id, clientX, clientY) => {
     if (gameState !== 'playing') return;
     
-    // Play random sound from letter config
     if (audioRefs.current.length > 0) {
       const randomIndex = Math.floor(Math.random() * audioRefs.current.length);
       const playInstance = audioRefs.current[randomIndex].cloneNode();
@@ -184,7 +176,7 @@ const App = () => {
   };
 
   return (
-    <div className={`relative w-full h-screen overflow-hidden font-sans touch-none select-none transition-all duration-1000 ${gameState === 'splash' || gameState === 'menu' ? 'bg-[#F5F5DC]' : 'bg-gradient-to-br ' + currentLetter?.bg}`}>
+    <div className="relative w-full h-screen overflow-hidden font-sans touch-none select-none transition-all duration-1000">
       
       <style>
         {`
@@ -201,28 +193,22 @@ const App = () => {
             border: 4px solid #D4AF37;
             box-shadow: 0 0 50px rgba(212, 175, 55, 0.4);
           }
-          .shamsa-ray {
-            background: linear-gradient(to top, #D4AF37, transparent);
-            width: 1px;
-            height: 300px;
-            position: absolute;
-            transform-origin: bottom center;
-          }
         `}
       </style>
 
-      {/* SPLASH SCREEN (Autoplay Fix) */}
+      {/* SPLASH SCREEN */}
       {gameState === 'splash' && (
-        <div className="absolute inset-0 z-[500] flex flex-col items-center justify-center bg-[#F5F5DC] p-8">
-          <div className="relative flex items-center justify-center w-64 h-64 mb-12">
-            <div className="absolute inset-0 shamsa-medallion rounded-full animate-[rotateShamsa_60s_linear_infinite]" />
-            <img src="/logo.png" className="w-32 h-auto relative z-10 contrast-125 drop-shadow-2xl" />
-          </div>
+        <div className="absolute inset-0 z-[500] flex flex-col items-center justify-center bg-black overflow-hidden">
+          <img 
+            src={isMobile ? "/splash_mobile.png" : "/splash_pc.png"} 
+            className="absolute inset-0 w-full h-full object-cover opacity-80" 
+            alt="Splash Background" 
+          />
+          <div className="absolute inset-0 bg-black/30" />
           <button 
-            onClick={enterHub}
-            className="group relative px-12 py-5 bg-[#800000] text-[#D4AF37] text-2xl font-black rounded-2xl shadow-2xl transition-all transform hover:scale-105 active:scale-95 overflow-hidden border-2 border-[#D4AF37]"
+            onClick={() => { setGameState('menu'); bgMusicRef.current?.play().catch(() => {}); }}
+            className="group relative px-16 py-6 bg-[#800000] text-[#D4AF37] text-3xl font-black rounded-3xl shadow-[0_0_40px_rgba(128,0,0,0.6)] transition-all transform hover:scale-105 active:scale-95 border-2 border-[#D4AF37] z-[510] tracking-widest italic"
           >
-            <div className="absolute inset-0 bg-[#D4AF37]/10 opacity-0 group-hover:opacity-100 transition-opacity" />
             ENTER HUB
           </button>
         </div>
@@ -230,18 +216,14 @@ const App = () => {
 
       {/* DASHBOARD (MENU) */}
       {gameState === 'menu' && (
-        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-start p-8 overflow-y-auto pb-24">
-          
-          {/* Shamsa Decorative Background Element */}
+        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-start p-8 bg-[#F5F5DC] overflow-y-auto pb-24">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none scale-150">
              <div className="relative w-96 h-96 shamsa-medallion rounded-full animate-[rotateShamsa_120s_linear_infinite]" />
           </div>
-
           <div className="text-center mb-16 mt-16 relative z-10">
             <h1 className="text-7xl font-black text-[#800000] drop-shadow-sm mb-4 tracking-tighter arabic-font">Alphabet Master</h1>
             <div className="h-1 w-48 bg-[#D4AF37] mx-auto rounded-full" />
           </div>
-
           <div className="grid grid-cols-4 md:grid-cols-7 gap-6 w-full max-w-5xl relative z-10">
             {Object.keys(LETTER_CONFIG).map((key) => (
               <button
@@ -261,7 +243,7 @@ const App = () => {
 
       {/* GAMEPLAY */}
       {gameState === 'playing' && (
-        <>
+        <div className={`absolute inset-0 bg-gradient-to-br ${currentLetter?.bg}`}>
           <button onClick={backToMenu} className="absolute top-8 left-8 z-[110] bg-white/10 p-4 rounded-3xl text-white backdrop-blur-lg border border-white/20">
             <ChevronLeft size={28} />
           </button>
@@ -281,12 +263,8 @@ const App = () => {
           {showLevelUp && (
             <div className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none">
               <div className="level-up-banner text-center">
-                <h2 className="text-8xl font-black text-white drop-shadow-2xl tracking-tighter uppercase italic">
-                  LEVEL {currentLevel.level}
-                </h2>
-                <div className={`mt-2 px-8 py-2 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-md text-2xl font-black tracking-[0.4em] ${currentLevel.color}`}>
-                  {currentLevel.name}
-                </div>
+                <h2 className="text-8xl font-black text-white drop-shadow-2xl tracking-tighter uppercase italic">LEVEL {currentLevel.level}</h2>
+                <div className={`mt-2 px-8 py-2 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-md text-2xl font-black uppercase tracking-[0.4em] ${currentLevel.color}`}>{currentLevel.name}</div>
               </div>
             </div>
           )}
@@ -306,21 +284,40 @@ const App = () => {
               </button>
             ))}
           </div>
-        </>
+          {floatingTexts.map((t) => (
+            <div key={t.id} className="score-float absolute pointer-events-none text-5xl font-black text-white z-20" style={{ left: t.x - 20, top: t.y - 40 }}>+1</div>
+          ))}
+        </div>
+      )}
+
+      {/* GAME OVER */}
+      {gameState === 'gameover' && (
+        <div className="absolute inset-0 z-[600] flex items-center justify-center bg-black/95 backdrop-blur-3xl p-6">
+          <div className="bg-white p-12 rounded-[3.5rem] text-center max-w-sm w-full shadow-2xl border-b-[12px] border-slate-200">
+            <h2 className="text-5xl font-black text-slate-800 mb-6 tracking-tighter italic">GAME OVER</h2>
+            <div className="bg-slate-50 p-8 rounded-[2.5rem] mb-10 shadow-inner">
+              <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] mb-2">Final Score</p>
+              <p className="text-7xl font-black text-slate-900 leading-none">{score}</p>
+              <div className="h-px bg-slate-200 w-full my-6" />
+              <p className="flex justify-center items-center gap-2 text-slate-500 font-bold">
+                <Trophy size={18} className="text-amber-500 fill-amber-500" />
+                Best: {highScore}
+              </p>
+            </div>
+            <button onClick={() => startGame(selectedLetterKey)} className="w-full bg-slate-900 hover:bg-black text-white py-6 rounded-3xl text-2xl font-black shadow-xl transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3 mb-4">
+              <RotateCcw size={24} /> TRY AGAIN
+            </button>
+            <button onClick={backToMenu} className="w-full text-slate-400 font-black uppercase tracking-widest text-xs hover:text-slate-600 transition-colors">Return to Menu</button>
+          </div>
+        </div>
       )}
 
       {/* BRANDING LOGO */}
-      <div className={`absolute bottom-8 left-8 z-[250] transition-all duration-500 ${gameState === 'playing' ? 'opacity-[0.05] pointer-events-none' : 'opacity-40'}`}>
-        <a 
-          href="https://api.whatsapp.com/send/?phone=201554712241&text&type=phone_number&app_absent=0" 
-          target="_blank" 
-          rel="noopener noreferrer"
-        >
-          <img src="/logo.png" className="w-24 h-auto mb-2 contrast-125" />
+      <div className={`absolute bottom-8 left-8 z-[1000] transition-all duration-500 ${gameState === 'playing' ? 'opacity-[0.05] pointer-events-none' : 'opacity-40'}`}>
+        <a href="https://api.whatsapp.com/send/?phone=201554712241&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
+          <img src="/logo.png" className="w-24 h-auto mb-2 contrast-125 hover:scale-110 transition-transform" />
         </a>
-        <p className="text-stone-800 text-[10px] font-black tracking-[0.4em] uppercase">
-          by <span className="font-bold">FarisAura</span>
-        </p>
+        <p className="text-stone-800 text-[10px] font-black tracking-[0.4em] uppercase">by <span className="font-bold">FarisAura</span></p>
       </div>
 
     </div>
