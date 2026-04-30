@@ -4,6 +4,7 @@ import { Play, RotateCcw, Heart, Star, Trophy, Zap, ChevronLeft, Award } from 'l
 // ==========================================
 // 4-MODE ALPHABET CONFIGURATION
 // ==========================================
+// Standard Arabic Sequence
 const ALPHABET_KEYS = [
   'hamza', 'ba', 'ta', 'tha', 'jeem', 'haa', 'kha', 
   'dal', 'thal', 'raa', 'zay', 'seen', 'sheen', 'sad', 
@@ -14,7 +15,7 @@ const ALPHABET_KEYS = [
 const LETTER_CONFIG = {
   'hamza': { char: 'أ', mode: 'rain', shapes: ['ء', 'ئ', 'ئـ', 'ؤ', 'أ', 'إ'], sounds: ['ءا.m4a', 'ءو.m4a', 'ءي.m4a'], bg: "from-sky-800 to-indigo-950", accent: "text-blue-500" },
   'ba': { char: 'ب', mode: 'rain', shapes: ['ب', 'بـ', 'ـبـ', 'ـب'], sounds: ['ب.m4a', 'بو.m4a', 'بي.m4a'], bg: "from-emerald-800 to-teal-950", accent: "text-green-500" },
-  'ta': { char: 'ت', mode: 'whack', shapes: ['ت', 'تـ', 'ـتـ', 'ـت'], sounds: ['تا.m4a', 'تو.m4a', 'تي.m4a'], bg: "from-rose-800 to-red-950", accent: "text-red-500" },
+  'ta': { char: 'ت', mode: 'rain', shapes: ['ت', 'تـ', 'ـتـ', 'ـت'], sounds: ['تا.m4a', 'تو.m4a', 'تي.m4a'], bg: "from-rose-800 to-red-950", accent: "text-red-500" },
   'tha': { char: 'ث', mode: 'runner', shapes: ['ث', 'ثـ', 'ـثـ', 'ـث'], sounds: ['ثا.m4a', 'ثو.m4a', 'ثي.m4a'], bg: "from-purple-800 to-indigo-950", accent: "text-purple-400" },
   'jeem': { char: 'ج', mode: 'rain', shapes: ['ج', 'جـ', 'ـجـ', 'ـج'], sounds: ['جا.m4a', 'جو.m4a', 'جي.m4a'], bg: "from-orange-800 to-amber-950", accent: "text-orange-500" },
   'haa': { char: 'ح', mode: 'whack', shapes: ['ح', 'حـ', 'ـحـ', 'ـح'], sounds: ['حا.m4a', 'حو.m4a', 'حي.m4a'], bg: "from-teal-800 to-cyan-950", accent: "text-cyan-500" },
@@ -31,7 +32,7 @@ const LETTER_CONFIG = {
   'zaa': { char: 'ظ', mode: 'runner', shapes: ['ظ', 'ظـ', 'ـظـ', 'ـظ'], sounds: ['ظا.m4a', 'ظو.m4a', 'ظي.m4a'], bg: "from-orange-900 to-black", accent: "text-orange-500" },
   'ayn': { char: 'ع', mode: 'runner', shapes: ['ع', 'عـ', 'ـعـ', 'ـع'], sounds: ['عا.m4a', 'عو.m4a', 'عي.m4a'], bg: "from-sky-900 to-black", accent: "text-sky-500" },
   'ghayn': { char: 'غ', mode: 'lantern', shapes: ['غ', 'غـ', 'ـغـ', 'ـغ'], sounds: ['غا.m4a', 'غو.m4a', 'غي.m4a'], bg: "from-indigo-900 to-black", accent: "text-indigo-400" },
-  'faa': { char: 'ف', mode: 'runner', shapes: ['ف', 'فـ', 'ـفـ', 'ـف'], sounds: ['فا.m4a', 'فو.m4a', 'في.m4a'], bg: "from-pink-900 to-black", accent: "text-pink-500" },
+  'faa': { char: 'ف', mode: 'whack', shapes: ['ف', 'فـ', 'ـفـ', 'ـف'], sounds: ['فا.m4a', 'فو.m4a', 'في.m4a'], bg: "from-pink-900 to-black", accent: "text-pink-500" },
   'qaf': { char: 'ق', mode: 'lantern', shapes: ['ق', 'قـ', 'ـقـ', 'ـق'], sounds: ['ققا.m4a', 'قو.m4a', 'قي.m4a'], bg: "from-red-900 to-black", accent: "text-red-500" },
   'kaf': { char: 'ك', mode: 'runner', shapes: ['ك', 'كـ', 'ـكـ', 'ـك'], sounds: ['كا.m4a', 'كو.m4a', 'كي.m4a'], bg: "from-blue-900 to-black", accent: "text-blue-400" },
   'lam': { char: 'ل', mode: 'runner', shapes: ['ل', 'لـ', 'ـلـ', 'ـل'], sounds: ['لَ.m4a', 'لو.m4a', 'لي.m4a'], bg: "from-cyan-900 to-black", accent: "text-cyan-500" },
@@ -65,14 +66,13 @@ const App = () => {
   const masteredCount = Object.keys(LETTER_CONFIG).filter(key => (scores[key] || 0) >= 70).length;
   const isGrandMaster = masteredCount === 28;
 
-  // Initialize Background Music and Audio Cache
   useEffect(() => {
     bgMusicRef.current = new Audio('/audio/abc_song.mp3');
     bgMusicRef.current.loop = true;
     bgMusicRef.current.preload = "auto";
   }, []);
 
-  // TURBO PRELOADER: Preloads letter sounds in background
+  // INSTANT AUDIO PRELOADER
   const preloadAudio = useCallback(() => {
     ALPHABET_KEYS.forEach(key => {
       const config = LETTER_CONFIG[key];
@@ -89,7 +89,7 @@ const App = () => {
   useEffect(() => {
     if (gameState === 'menu') {
       bgMusicRef.current?.play().catch(() => {});
-      preloadAudio(); // Start preloading when in menu
+      preloadAudio();
     } else {
       bgMusicRef.current?.pause();
     }
@@ -166,7 +166,7 @@ const App = () => {
   const handleCatch = (id, clientX, clientY) => {
     if (gameState !== 'playing') return;
     
-    // Play Cached Audio Instantly
+    // Instant Audio Trigger
     const sounds = currentLetter.sounds;
     const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
     const cachedAudio = audioRefs.current[randomSound];
@@ -219,7 +219,7 @@ const App = () => {
           @keyframes slideUp { 0% { transform: translateY(40px); opacity: 0; } 20% { transform: translateY(0); opacity: 1; } 80% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
           @keyframes rotateShamsa { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
           @keyframes hitPulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
-          @keyframes whackUp { 0% { transform: translateY(100%); } 15% { transform: translateY(0%); } 85% { transform: translateY(0%); } 100% { transform: translateY(100%); } }
+          @keyframes whackUp { 0% { transform: translateY(100%); } 15% { transform: translateY(20%); } 85% { transform: translateY(20%); } 100% { transform: translateY(100%); } }
           @keyframes runLeft { 0% { transform: translateX(100vw); } 100% { transform: translateX(-150px); } }
           @keyframes floatUp { 0% { transform: translateY(100vh) scale(0.8); } 100% { transform: translateY(-150px) scale(1.2); } }
           .letter-fall { animation: fall linear forwards; }
@@ -243,12 +243,12 @@ const App = () => {
 
       {/* SPLASH SCREEN (Large fitting logo) */}
       {gameState === 'splash' && (
-        <div className="absolute inset-0 z-[500] flex flex-col items-center justify-center bg-[#F5F5DC] overflow-hidden p-4">
+        <div className="absolute inset-0 z-[500] flex flex-col items-center justify-center bg-[#F5F5DC] overflow-hidden p-6">
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.05] pointer-events-none scale-[2]">
              <div className="relative w-96 h-96 shamsa-medallion rounded-full animate-[rotateShamsa_120s_linear_infinite]" />
           </div>
-          <img src="/logo.png" className="w-full max-w-2xl h-auto mb-16 contrast-125 z-10" />
-          <button onClick={() => { setGameState('menu'); bgMusicRef.current?.play().catch(() => {}); }} className="group relative px-24 py-10 bg-[#800000] text-[#D4AF37] text-5xl font-black rounded-[3rem] shadow-2xl border-4 border-[#D4AF37] z-[510] tracking-widest italic uppercase active:scale-95 transition-transform">ENTER HUB</button>
+          <img src="/logo.png" className="w-full max-w-3xl h-auto mb-16 contrast-125 z-10" />
+          <button onClick={() => { setGameState('menu'); bgMusicRef.current?.play().catch(() => {}); }} className="group relative px-24 py-12 bg-[#800000] text-[#D4AF37] text-6xl font-black rounded-[3.5rem] shadow-2xl border-4 border-[#D4AF37] z-[510] tracking-widest italic uppercase active:scale-95 transition-transform">ENTER HUB</button>
         </div>
       )}
 
@@ -315,7 +315,7 @@ const App = () => {
             </div>
           )}
 
-          {/* ENGINE: SAND WHACK (Natural Hole Pop-up) */}
+          {/* ENGINE: SAND WHACK (Precision Pop-up) */}
           {currentLetter.mode === 'whack' && (
             <div className="absolute inset-0 flex items-center justify-center p-4">
               <div className="grid grid-cols-3 grid-rows-3 gap-10 w-full max-w-lg aspect-square">
@@ -327,9 +327,9 @@ const App = () => {
                         <button
                           onPointerDown={(e) => handleCatch(el.id, e.clientX, e.clientY)}
                           style={{ animationDuration: `${currentLevel.speed * 0.9}s` }}
-                          className="letter-whack relative w-full h-[85%] bg-white rounded-t-[2rem] shadow-2xl flex items-center justify-center ultra-sensitive-hitbox outline-none touch-none active:scale-95"
+                          className="letter-whack relative w-full h-[120%] bg-white rounded-t-[2.5rem] shadow-2xl flex items-center justify-center ultra-sensitive-hitbox outline-none touch-none active:scale-95"
                         >
-                          <span className={`text-6xl font-bold ${currentLetter.accent} arabic-font`}>{el.shape}</span>
+                          <span className={`text-6xl font-bold ${currentLetter.accent} arabic-font pb-10`}>{el.shape}</span>
                         </button>
                       )}
                     </div>
@@ -402,7 +402,7 @@ const App = () => {
         </div>
       )}
 
-      {/* BRANDING LOGO (Watermark) */}
+      {/* BRANDING LOGO (Ghost Watermark) */}
       <div className={`absolute bottom-8 left-8 z-[1000] transition-all duration-500 ${gameState === 'playing' ? 'opacity-[0.01] pointer-events-none' : 'opacity-[0.05]'}`}>
         <a href="https://api.whatsapp.com/send/?phone=201554712241&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
           <img src="/logo.png" className="w-24 h-auto mb-2 contrast-125 hover:scale-105 transition-transform" />
