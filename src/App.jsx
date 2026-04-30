@@ -20,7 +20,7 @@ const LETTER_CONFIG = {
   'thal': { char: 'ذ', mode: 'whack', shapes: ['ذ', 'ـذ', 'ذ'], sounds: ['ذا.m4a', 'ذو.m4a', 'ذي.m4a'], bg: "from-yellow-600 via-orange-700 to-amber-900", accent: "text-orange-700" },
   'zay': { char: 'ز', mode: 'whack', shapes: ['ز', 'ـز', 'ز'], sounds: ['زا.m4a', 'زو.m4a', 'زي.m4a'], bg: "from-green-700 via-teal-800 to-cyan-950", accent: "text-teal-800" },
   'sheen': { char: 'ش', mode: 'whack', shapes: ['شـ', 'ـشـ', 'ـش'], sounds: ['شا.m4a', 'شو.m4a', 'شي.m4a'], bg: "from-violet-700 via-purple-800 to-fuchsia-950", accent: "text-purple-700" },
-  'dad': { char: 'ض', mode: 'whack', shapes: ['ضـ', 'ـضـ', 'ـض'], sounds: ['ضا.m4a', 'ضو.m4a', 'ضي.m4a'], bg: "from-emerald-800 via-green-950 to-black", accent: "text-green-900" },
+  'dad': { char: 'ض', mode: 'whack', shapes: ['ضـ', 'ـضـ', 'ـض'], sounds: ['ضا.m4a', 'ضو.m4a', 'ضي.m4a'], bg: "from-emerald-600 via-green-800 to-black", accent: "text-green-900" },
   'taa': { char: 'ط', mode: 'whack', shapes: ['طـ', 'ـطـ', 'ـط'], sounds: ['طا.m4a', 'طو.m4a', 'طي.m4a'], bg: "from-amber-800 via-orange-700 to-red-950", accent: "text-orange-900" },
 
   // MODE: RUNNER (Right to Left)
@@ -39,7 +39,7 @@ const LETTER_CONFIG = {
   'noon': { char: 'ن', mode: 'lantern', shapes: ['نـ', 'ـنـ', 'ـن'], sounds: ['نا.m4a', 'نو.m4a', 'ني.m4a'], bg: "from-green-700 via-emerald-900 to-black", accent: "text-emerald-800" },
   'haa2': { char: 'ه', mode: 'lantern', shapes: ['هـ', 'ـهـ', 'ـه'], sounds: ['ها.m4a', 'هو.m4a', 'هي.m4a'], bg: "from-orange-600 via-yellow-700 to-black", accent: "text-yellow-700" },
   'waw': { char: 'و', mode: 'lantern', shapes: ['و', 'ـو', 'و'], sounds: ['وا.m4a', 'وو.m4a', 'وي.m4a'], bg: "from-blue-800 via-indigo-950 to-black", accent: "text-indigo-800" },
-  'yaa': { char: 'ي', mode: 'lantern', shapes: ['يـ', 'ـيـ', 'ـي'], sounds: ['ي.m4a', 'يو.m4a', 'يي.m4a'], bg: "from-teal-600 via-emerald-900 to-black", accent: "text-teal-800" },
+  'yaa': { char: 'ي', shapes: ['يـ', 'ـيـ', 'ـي'], sounds: ['ي.m4a', 'يو.m4a', 'يي.m4a'], bg: "from-teal-600 via-emerald-900 to-black", accent: "text-teal-800" },
 };
 
 const App = () => {
@@ -63,8 +63,9 @@ const App = () => {
   const bgMusicRef = useRef(null);
   const currentLetter = selectedLetterKey ? LETTER_CONFIG[selectedLetterKey] : null;
 
-  // Calculate mastery for progress bar
+  // Calculate mastery
   const masteredCount = Object.keys(LETTER_CONFIG).filter(key => (scores[key] || 0) >= 70).length;
+  const isGrandMaster = masteredCount === 28;
 
   useEffect(() => {
     const checkDevice = () => setIsMobile(window.innerWidth < 768);
@@ -115,7 +116,6 @@ const App = () => {
     setElements([]);
     setFloatingTexts([]);
     setGameState('playing');
-    
     const config = LETTER_CONFIG[letterKey];
     audioRefs.current = config.sounds.map(filename => {
       const audio = new Audio(`/audio/${filename}`);
@@ -135,7 +135,6 @@ const App = () => {
       setElements((prev) => {
         const id = Date.now() + Math.random();
         const shape = currentLetter.shapes[Math.floor(Math.random() * 3)];
-        
         if (currentLetter.mode === 'whack') {
           const holeIndex = Math.floor(Math.random() * 9);
           if (prev.find(e => e.holeIndex === holeIndex)) return prev;
@@ -165,13 +164,11 @@ const App = () => {
 
   const handleCatch = (id, clientX, clientY) => {
     if (gameState !== 'playing') return;
-    
     if (audioRefs.current.length > 0) {
       const randomIndex = Math.floor(Math.random() * audioRefs.current.length);
       const playInstance = audioRefs.current[randomIndex].cloneNode();
       playInstance.play().catch(() => {});
     }
-
     setElements((prev) => prev.filter((l) => l.id !== id));
     setScore((prev) => prev + 1);
     const newFloatingText = { id: Date.now(), x: clientX, y: clientY };
@@ -190,14 +187,14 @@ const App = () => {
         const newLives = l - 1;
         if (newLives <= 0) {
           setGameState('gameover');
-          setScores(prev => {
-            const currentBest = prev[selectedLetterKey] || 0;
+          setScores(prevScores => {
+            const currentBest = prevScores[selectedLetterKey] || 0;
             if (score > currentBest) {
-              const newScores = { ...prev, [selectedLetterKey]: score };
-              localStorage.setItem('alphabetMasterScores', JSON.stringify(newScores));
-              return newScores;
+              const nextScores = { ...prevScores, [selectedLetterKey]: score };
+              localStorage.setItem('alphabetMasterScores', JSON.stringify(nextScores));
+              return nextScores;
             }
-            return prev;
+            return prevScores;
           });
         }
         return newLives;
@@ -219,6 +216,7 @@ const App = () => {
           @keyframes whackUp { 0% { transform: translateY(100%); opacity: 0.5; } 15% { transform: translateY(-10%); opacity: 1; } 85% { transform: translateY(-10%); opacity: 1; } 100% { transform: translateY(100%); opacity: 0.5; } }
           @keyframes runLeft { 0% { transform: translateX(100vw); } 100% { transform: translateX(-150px); } }
           @keyframes floatUp { 0% { transform: translateY(100vh) scale(0.8); } 100% { transform: translateY(-150px) scale(1.2); } }
+          @keyframes fanousGlow { 0% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.4); } 50% { box-shadow: 0 0 40px rgba(251, 191, 36, 0.7); } 100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.4); } }
           .letter-fall { animation: fall linear forwards; }
           .score-float { animation: popOut 0.8s ease-out forwards; }
           .level-up-banner { animation: slideUp 2s ease-in-out forwards; }
@@ -234,6 +232,8 @@ const App = () => {
           .splash-bg { background-color: #000; background-position: center; background-size: cover; background-repeat: no-repeat; }
           .ultra-sensitive-hitbox { padding: 4rem; margin: -4rem; }
           .dune-hole { background: radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, transparent 70%); }
+          .fanous-shape { clip-path: polygon(50% 0%, 100% 20%, 100% 80%, 50% 100%, 0% 80%, 0% 20%); }
+          .scroll-shape { border-radius: 40px 10px 40px 10px; border-left: 10px solid #D4AF37; border-right: 10px solid #D4AF37; }
         `}
       </style>
 
@@ -253,13 +253,13 @@ const App = () => {
              <div className="relative w-96 h-96 shamsa-medallion rounded-full animate-[rotateShamsa_120s_linear_infinite]" />
           </div>
 
-          {/* Mastery Progress Bar */}
-          <div className="w-full max-w-md bg-stone-200 h-2 rounded-full mb-8 relative z-20 overflow-hidden shadow-inner">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#008080] to-[#40E0D0] transition-all duration-1000" style={{ width: `${(masteredCount / 28) * 100}%` }} />
-            <div className="absolute top-0 right-2 text-[8px] font-black text-stone-600 uppercase tracking-tighter leading-[8px]">{masteredCount} / 28 Mastered</div>
+          <div className="w-full max-w-md bg-stone-200 h-2 rounded-full mb-8 relative z-20 overflow-hidden shadow-inner flex items-center">
+            <div className="h-full bg-gradient-to-r from-[#008080] to-[#40E0D0] transition-all duration-1000" style={{ width: `${(masteredCount / 28) * 100}%` }} />
+            <div className="absolute right-2 text-[8px] font-black text-stone-600 uppercase tracking-tighter">{masteredCount} / 28 Mastered</div>
           </div>
 
           <div className="text-center mb-16 relative z-10">
+            {isGrandMaster && <div className="text-yellow-500 animate-bounce flex justify-center mb-2"><Award size={48} /></div>}
             <h1 className="text-7xl font-black text-[#800000] drop-shadow-sm mb-4 tracking-tighter arabic-font">Alphabet Master</h1>
             <div className="h-1 w-48 bg-[#D4AF37] mx-auto rounded-full" />
           </div>
@@ -270,11 +270,7 @@ const App = () => {
               const isMastered = letterScore >= 70;
               return (
                 <button key={key} onClick={() => startGame(key)} className="aspect-square bg-[#008080]/10 hover:bg-[#008080]/20 border border-[#D4AF37]/30 rounded-3xl flex flex-col items-center justify-center transition-all transform hover:scale-105 active:scale-90 group shadow-lg relative overflow-hidden">
-                  {isMastered && (
-                    <div className="absolute top-1 right-1">
-                      <Star size={16} className="text-yellow-500 fill-yellow-500 animate-bounce" />
-                    </div>
-                  )}
+                  {isMastered && <div className="absolute top-1 right-1 text-yellow-500 animate-bounce"><Star size={14} fill="currentColor" /></div>}
                   <span className="text-5xl font-bold text-[#800000] group-hover:text-[#40E0D0] transition-colors arabic-font drop-shadow-sm uppercase">{LETTER_CONFIG[key].char}</span>
                   <span className="text-[9px] text-stone-500 uppercase mt-2 font-black tracking-widest">{key}</span>
                   {letterScore > 0 && <span className="text-[8px] text-stone-400 font-bold mt-1">Best: {letterScore}</span>}
@@ -326,7 +322,7 @@ const App = () => {
                         <button
                           onPointerDown={(e) => handleCatch(el.id, e.clientX, e.clientY)}
                           style={{ animationDuration: `${currentLevel.speed * 0.9}s` }}
-                          className="letter-whack relative w-5/6 h-[110%] bg-white rounded-t-[3rem] shadow-2xl flex items-center justify-center ultra-sensitive-hitbox outline-none touch-none active:scale-90 active:animate-[hitPulse_0.2s_ease-out]"
+                          className="letter-whack relative w-5/6 h-[115%] bg-white rounded-t-[3rem] shadow-2xl flex items-center justify-center ultra-sensitive-hitbox outline-none touch-none active:scale-90 active:animate-[hitPulse_0.2s_ease-out]"
                         >
                           <span className={`text-7xl font-bold ${currentLetter.accent} arabic-font pb-6`}>{el.shape}</span>
                         </button>
@@ -342,13 +338,7 @@ const App = () => {
           {currentLetter.mode === 'rain' && (
             <div className="absolute inset-0">
               {elements.map((l) => (
-                <button
-                  key={l.id}
-                  onPointerDown={(e) => handleCatch(l.id, e.clientX, e.clientY)}
-                  onAnimationEnd={() => handleMiss(l.id)}
-                  style={{ left: `${l.left}%`, animationDuration: `${l.duration}s` }}
-                  className="letter-fall absolute cursor-pointer ultra-sensitive-hitbox outline-none touch-none z-10"
-                >
+                <button key={l.id} onPointerDown={(e) => handleCatch(l.id, e.clientX, e.clientY)} onAnimationEnd={() => handleMiss(l.id)} style={{ left: `${l.left}%`, animationDuration: `${l.duration}s` }} className="letter-fall absolute cursor-pointer ultra-sensitive-hitbox outline-none touch-none z-10">
                   <div className="w-24 h-24 bg-white rounded-[2rem] shadow-2xl flex items-center justify-center border-b-8 border-slate-200 transition-transform active:scale-90 active:animate-[hitPulse_0.2s_ease-out]">
                     <span className={`text-6xl font-bold ${currentLetter.accent} arabic-font`}>{l.shape}</span>
                   </div>
@@ -361,14 +351,8 @@ const App = () => {
           {currentLetter.mode === 'runner' && (
             <div className="absolute inset-0">
               {elements.map((l) => (
-                <button
-                  key={l.id}
-                  onPointerDown={(e) => handleCatch(l.id, e.clientX, e.clientY)}
-                  onAnimationEnd={() => handleMiss(l.id)}
-                  style={{ top: `${l.top}%`, animationDuration: `${l.duration}s` }}
-                  className="letter-run absolute cursor-pointer ultra-sensitive-hitbox outline-none touch-none z-10"
-                >
-                  <div className="w-24 h-24 bg-white rounded-3xl shadow-2xl flex items-center justify-center border-r-8 border-slate-200 transition-transform active:scale-90 active:animate-[hitPulse_0.2s_ease-out]">
+                <button key={l.id} onPointerDown={(e) => handleCatch(l.id, e.clientX, e.clientY)} onAnimationEnd={() => handleMiss(l.id)} style={{ top: `${l.top}%`, animationDuration: `${l.duration}s` }} className="letter-run absolute cursor-pointer ultra-sensitive-hitbox outline-none touch-none z-10">
+                  <div className="w-24 h-32 bg-[#FDF5E6] scroll-shape shadow-2xl flex items-center justify-center transition-transform active:scale-90 active:animate-[hitPulse_0.2s_ease-out]">
                     <span className={`text-6xl font-bold ${currentLetter.accent} arabic-font`}>{l.shape}</span>
                   </div>
                 </button>
@@ -380,16 +364,10 @@ const App = () => {
           {currentLetter.mode === 'lantern' && (
             <div className="absolute inset-0">
               {elements.map((l) => (
-                <button
-                  key={l.id}
-                  onPointerDown={(e) => handleCatch(l.id, e.clientX, e.clientY)}
-                  onAnimationEnd={() => handleMiss(l.id)}
-                  style={{ left: `${l.left}%`, animationDuration: `${l.duration}s` }}
-                  className="letter-float absolute cursor-pointer ultra-sensitive-hitbox outline-none touch-none z-10"
-                >
-                  <div className="w-24 h-32 bg-white/95 rounded-b-3xl rounded-t-full shadow-2xl flex flex-col items-center justify-center border-t-8 border-yellow-400 transition-transform active:scale-90 active:animate-[hitPulse_0.2s_ease-out]">
+                <button key={l.id} onPointerDown={(e) => handleCatch(l.id, e.clientX, e.clientY)} onAnimationEnd={() => handleMiss(l.id)} style={{ left: `${l.left}%`, animationDuration: `${l.duration}s` }} className="letter-float absolute cursor-pointer ultra-sensitive-hitbox outline-none touch-none z-10">
+                  <div className="w-24 h-36 bg-white/90 fanous-shape shadow-2xl flex flex-col items-center justify-center border-t-8 border-yellow-500 animate-[fanousGlow_2s_infinite] transition-transform active:scale-90 active:animate-[hitPulse_0.2s_ease-out]">
                     <span className={`text-6xl font-bold ${currentLetter.accent} arabic-font`}>{l.shape}</span>
-                    <div className="w-4 h-4 bg-yellow-400 rounded-full animate-pulse mt-2 shadow-[0_0_10px_#FBBF24]" />
+                    <div className="w-3 h-6 bg-yellow-500 rounded-t-full mt-2 shadow-[0_0_15px_#EAB308]" />
                   </div>
                 </button>
               ))}
