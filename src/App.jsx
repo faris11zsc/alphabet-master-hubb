@@ -19,15 +19,15 @@ const LETTER_CONFIG = {
   'seen': { char: 'س', shapes: ['سـ', 'ـسـ', 'ـس'], sounds: ['س.m4a', 'سو.m4a', 'سي.m4a'], bg: "from-blue-700 via-indigo-800 to-violet-950", accent: "text-indigo-700" },
   'sheen': { char: 'ش', shapes: ['شـ', 'ـشـ', 'ـش'], sounds: ['شا.m4a', 'شو.m4a', 'شي.m4a'], bg: "from-violet-700 via-purple-800 to-fuchsia-950", accent: "text-purple-700" },
   'sad': { char: 'ص', shapes: ['صـ', 'ـصـ', 'ـص'], sounds: ['صا.m4a', 'صو.m4a', 'صي.m4a'], bg: "from-stone-700 via-stone-900 to-black", accent: "text-stone-700" },
-  'dad': { char: 'ض', shapes: ['ضـ', 'ـضـ', 'ـض'], sounds: ['ضا.m4a', 'ضو.m4a', 'ضي.m4a'], bg: "from-emerald-800 via-green-950 to-black", accent: "text-green-900" },
-  'taa': { char: 'ط', shapes: ['طـ', 'ـطـ', 'ـط'], sounds: ['طا.m4a', 'طو.m4a', 'طي.m4a'], bg: "from-amber-800 via-orange-900 to-red-950", accent: "text-orange-900" },
+  'dad': { char: 'ض', shapes: ['ضـ', 'ـضـ', 'ـض'], sounds: ['ضا.m4a', 'ضو.m4a', 'ضي.m4a'], bg: "from-emerald-600 via-green-800 to-black", accent: "text-green-900" },
+  'taa': { char: 'ط', shapes: ['طـ', 'ـطـ', 'ـط'], sounds: ['طا.m4a', 'طو.m4a', 'طي.m4a'], bg: "from-amber-600 via-orange-700 to-red-950", accent: "text-orange-900" },
   'zaa': { char: 'ظ', shapes: ['ظـ', 'ـظـ', 'ـظ'], sounds: ['ظا.m4a', 'ظو.m4a', 'ظي.m4a'], bg: "from-orange-900 via-stone-900 to-black", accent: "text-stone-900" },
   'ayn': { char: 'ع', shapes: ['عـ', 'ـعـ', 'ـع'], sounds: ['عا.m4a', 'عو.m4a', 'عي.m4a'], bg: "from-sky-700 via-blue-900 to-black", accent: "text-blue-900" },
   'ghayn': { char: 'غ', shapes: ['غـ', 'ـغـ', 'ـغ'], sounds: ['غا.m4a', 'غو.m4a', 'غي.m4a'], bg: "from-indigo-700 via-purple-900 to-black", accent: "text-purple-900" },
   'faa': { char: 'ف', shapes: ['فـ', 'ـفـ', 'ـف'], sounds: ['ف.m4a', 'فو.m4a', 'في.m4a'], bg: "from-pink-700 via-rose-900 to-black", accent: "text-rose-700" },
   'qaf': { char: 'ق', shapes: ['قـ', 'ـقـ', 'ـق'], sounds: ['ققا.m4a', 'قو.m4a', 'قي.m4a'], bg: "from-red-800 via-red-950 to-black", accent: "text-red-900" },
   'kaf': { char: 'ك', shapes: ['كـ', 'ـكـ', 'ـك'], sounds: ['كا.m4a', 'كو.m4a', 'كي.m4a'], bg: "from-blue-600 via-blue-800 to-black", accent: "text-blue-700" },
-  'lam': { char: 'ل', shapes: ['لـ', 'ـلـ', 'ـل'], sounds: ['لا.m4a', 'لو.m4a', 'لي.m4a'], bg: "from-cyan-700 via-blue-800 to-black", accent: "text-blue-600" },
+  'lam': { char: 'ل', shapes: ['لـ', 'ـلـ', 'ـل'], sounds: ['لَ.m4a', 'لو.m4a', 'لي.m4a'], bg: "from-cyan-700 via-blue-800 to-black", accent: "text-blue-600" },
   'meem': { char: 'م', shapes: ['مـ', 'ـمـ', 'ـم'], sounds: ['ما.m4a', 'مو.m4a', 'مي.m4a'], bg: "from-violet-700 via-fuchsia-900 to-black", accent: "text-fuchsia-800" },
   'noon': { char: 'ن', shapes: ['نـ', 'ـنـ', 'ـن'], sounds: ['نا.m4a', 'نو.m4a', 'ني.m4a'], bg: "from-green-700 via-emerald-900 to-black", accent: "text-emerald-800" },
   'haa2': { char: 'ه', shapes: ['هـ', 'ـهـ', 'ـه'], sounds: ['ها.m4a', 'هو.m4a', 'هي.m4a'], bg: "from-orange-600 via-yellow-700 to-black", accent: "text-yellow-700" },
@@ -81,7 +81,6 @@ const App = () => {
 
   // --- HARDER 8-LEVEL CAP LOGIC ---
   const getLevelData = (s) => {
-    // Speed and Spawn rate cap at Level 8 (score 70-80)
     if (s < 10) return { level: 1, name: "Beginner", speed: 2.0, spawnRate: 850, color: "text-sky-300" };
     if (s < 20) return { level: 2, name: "Novice", speed: 1.7, spawnRate: 700, color: "text-green-300" };
     if (s < 30) return { level: 3, name: "Rookie", speed: 1.5, spawnRate: 600, color: "text-yellow-300" };
@@ -89,7 +88,6 @@ const App = () => {
     if (s < 50) return { level: 5, name: "Expert", speed: 1.1, spawnRate: 450, color: "text-red-300" };
     if (s < 60) return { level: 6, name: "Pro", speed: 1.0, spawnRate: 400, color: "text-pink-300" };
     if (s < 70) return { level: 7, name: "Master", speed: 0.9, spawnRate: 350, color: "text-purple-300" };
-    // Level 8 and beyond use the same maximum speed
     return { level: 8, name: "Grandmaster", speed: 0.8, spawnRate: 300, color: "text-indigo-300" };
   };
 
@@ -111,7 +109,6 @@ const App = () => {
     setFloatingTexts([]);
     setGameState('playing');
     
-    // Setup Audio for the selected letter
     const config = LETTER_CONFIG[letterKey];
     audioRefs.current = config.sounds.map(filename => {
       const audio = new Audio(`/audio/${filename}`);
@@ -184,6 +181,7 @@ const App = () => {
           @keyframes popOut { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
           @keyframes slideUp { 0% { transform: translateY(40px); opacity: 0; } 20% { transform: translateY(0); opacity: 1; } 80% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
           @keyframes rotateShamsa { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+          @keyframes hitPulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
           .letter-fall { animation: fall linear forwards; }
           .score-float { animation: popOut 0.8s ease-out forwards; }
           .level-up-banner { animation: slideUp 2s ease-in-out forwards; }
@@ -194,21 +192,24 @@ const App = () => {
             box-shadow: 0 0 50px rgba(212, 175, 55, 0.4);
           }
           .splash-bg { background-color: #000; background-position: center; background-size: cover; background-repeat: no-repeat; }
+          .ultra-sensitive-hitbox { 
+            padding: 4rem; /* massive p-16 equivalent */
+            margin: -4rem; /* massive -m-16 equivalent */
+          }
         `}
       </style>
 
-      {/* SPLASH SCREEN (Optimized Loading) */}
+      {/* SPLASH SCREEN */}
       {gameState === 'splash' && (
         <div className="absolute inset-0 z-[500] flex flex-col items-center justify-center bg-black overflow-hidden">
-          {/* Quick-loading low-res fallback or background style */}
           <div 
             className="absolute inset-0 splash-bg transition-opacity duration-1000"
             style={{ 
               backgroundImage: `url(${isMobile ? "/splash_mobile.png" : "/splash_pc.png"})`,
-              opacity: 0.8
+              opacity: 0.85
             }} 
           />
-          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 bg-black/30" />
           <button 
             onClick={() => { setGameState('menu'); bgMusicRef.current?.play().catch(() => {}); }}
             className="group relative px-16 py-6 bg-[#800000] text-[#D4AF37] text-3xl font-black rounded-3xl shadow-[0_0_40px_rgba(128,0,0,0.6)] transition-all transform hover:scale-105 active:scale-95 border-2 border-[#D4AF37] z-[510] tracking-widest italic"
@@ -245,7 +246,6 @@ const App = () => {
             ))}
           </div>
 
-          {/* EXTRA SCROLL SPACE (Prevent logo overlap) */}
           <div className="h-[60vh] w-full shrink-0" />
         </div>
       )}
@@ -272,7 +272,7 @@ const App = () => {
           {showLevelUp && (
             <div className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none">
               <div className="level-up-banner text-center">
-                <h2 className="text-8xl font-black text-white drop-shadow-2xl tracking-tighter uppercase italic text-shadow-lg">LEVEL {currentLevel.level}</h2>
+                <h2 className="text-8xl font-black text-white drop-shadow-2xl tracking-tighter uppercase italic">LEVEL {currentLevel.level}</h2>
                 <div className={`mt-2 px-8 py-2 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-md text-2xl font-black uppercase tracking-[0.4em] ${currentLevel.color}`}>{currentLevel.name}</div>
               </div>
             </div>
@@ -285,9 +285,9 @@ const App = () => {
                 onPointerDown={(e) => handleCatch(l.id, e.clientX, e.clientY)}
                 onAnimationEnd={() => handleMiss(l.id)}
                 style={{ left: `${l.left}%`, animationDuration: `${l.duration}s` }}
-                className="letter-fall absolute cursor-pointer p-10 -ml-10 z-10"
+                className="letter-fall absolute cursor-pointer ultra-sensitive-hitbox outline-none touch-none z-10"
               >
-                <div className="w-24 h-24 bg-white rounded-[2rem] shadow-2xl flex items-center justify-center border-b-8 border-slate-200">
+                <div className="w-24 h-24 bg-white rounded-[2rem] shadow-2xl flex items-center justify-center border-b-8 border-slate-200 transition-transform active:scale-90 active:animate-[hitPulse_0.2s_ease-out]">
                   <span className={`text-6xl font-bold ${currentLetter.accent} arabic-font`}>{l.shape}</span>
                 </div>
               </button>
@@ -322,7 +322,7 @@ const App = () => {
       )}
 
       {/* BRANDING LOGO */}
-      <div className={`absolute bottom-8 left-8 z-[1000] transition-all duration-500 ${gameState === 'playing' ? 'opacity-[0.02] pointer-events-none' : 'opacity-30'}`}>
+      <div className={`absolute bottom-8 left-8 z-[1000] transition-all duration-500 ${gameState === 'playing' ? 'opacity-[0.01] pointer-events-none' : 'opacity-[0.15]'}`}>
         <a href="https://api.whatsapp.com/send/?phone=201554712241&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
           <img src="/logo.png" className="w-24 h-auto mb-2 contrast-125 hover:scale-105 transition-transform" />
         </a>
