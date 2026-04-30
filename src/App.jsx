@@ -4,10 +4,10 @@ import { Play, RotateCcw, Heart, Star, Trophy, Zap, ChevronLeft, Award } from 'l
 // ==========================================
 // 4-MODE ALPHABET CONFIGURATION
 // ==========================================
-// Distribution strategy: Separating similar-looking letters (Ba/Ta/Tha, Seen/Sheen, etc.) across 4 modes.
-// Every letter now has its own unique background image (bg_1.jpg to bg_28.jpg).
+// Distribution strategy: Separating similar-looking letters across 4 modes.
+// Every letter has its own unique background image (bg_1.jpg to bg_28.jpg).
 const LETTER_CONFIG = {
-  // MODE: RAIN (Falling Down) - 7 Letters
+  // MODE: RAIN (Falling Down)
   'hamza': { char: 'أ', mode: 'rain', shapes: ['ء', 'ئ', 'ئـ', 'ؤ', 'أ', 'إ'], sounds: ['ءا.m4a', 'ءو.m4a', 'ءي.m4a'], bg: "/bg_1.jpg", accent: "text-blue-600" },
   'ba': { char: 'ب', mode: 'rain', shapes: ['بـ', 'ـبـ', 'ـب'], sounds: ['ب.m4a', 'بو.m4a', 'بي.m4a'], bg: "/bg_2.jpg", accent: "text-green-600" },
   'jeem': { char: 'ج', mode: 'rain', shapes: ['جـ', 'ـجـ', 'ـج'], sounds: ['جا.m4a', 'جو.m4a', 'جي.m4a'], bg: "/bg_3.jpg", accent: "text-amber-600" },
@@ -16,7 +16,7 @@ const LETTER_CONFIG = {
   'seen': { char: 'س', mode: 'rain', shapes: ['سـ', 'ـسـ', 'ـس'], sounds: ['س.m4a', 'سو.m4a', 'سي.m4a'], bg: "/bg_6.jpg", accent: "text-indigo-700" },
   'sad': { char: 'ص', mode: 'rain', shapes: ['صـ', 'ـصـ', 'ـص'], sounds: ['صا.m4a', 'صو.m4a', 'صي.m4a'], bg: "/bg_7.jpg", accent: "text-stone-700" },
 
-  // MODE: WHACK (Popping Up) - 7 Letters
+  // MODE: WHACK (Popping Up)
   'ta': { char: 'ت', mode: 'whack', shapes: ['تـ', 'ـتـ', 'ـت'], sounds: ['تا.m4a', 'تو.m4a', 'تي.m4a'], bg: "/bg_8.jpg", accent: "text-red-600" },
   'haa': { char: 'ح', mode: 'whack', shapes: ['حـ', 'ـحـ', 'ـح'], sounds: ['حا.m4a', 'حو.m4a', 'حي.m4a'], bg: "/bg_9.jpg", accent: "text-cyan-600" },
   'thal': { char: 'ذ', mode: 'whack', shapes: ['ذ', 'ـذ', 'ـذـ'], sounds: ['ذا.m4a', 'ذو.m4a', 'ذي.m4a'], bg: "/bg_10.jpg", accent: "text-orange-700" },
@@ -25,7 +25,7 @@ const LETTER_CONFIG = {
   'dad': { char: 'ض', mode: 'whack', shapes: ['ضـ', 'ـضـ', 'ـض'], sounds: ['ضا.m4a', 'ضو.m4a', 'ضي.m4a'], bg: "/bg_13.jpg", accent: "text-green-900" },
   'taa': { char: 'ط', mode: 'whack', shapes: ['طـ', 'ـطـ', 'ـط'], sounds: ['طا.m4a', 'طو.m4a', 'طي.m4a'], bg: "/bg_14.jpg", accent: "text-orange-900" },
 
-  // MODE: RUNNER (Right to Left) - 7 Letters
+  // MODE: RUNNER (Right to Left)
   'tha': { char: 'ث', mode: 'runner', shapes: ['ثـ', 'ـثـ', 'ـث'], sounds: ['ثا.m4a', 'ثو.m4a', 'ثي.m4a'], bg: "/bg_15.jpg", accent: "text-indigo-600" },
   'kha': { char: 'خ', mode: 'runner', shapes: ['خـ', 'ـخـ', 'ـخ'], sounds: ['خا.m4a', 'خو.m4a', 'خي.m4a'], bg: "/bg_16.jpg", accent: "text-slate-800" },
   'zaa': { char: 'ظ', mode: 'runner', shapes: ['ظـ', 'ـظـ', 'ـظ'], sounds: ['ظا.m4a', 'ظو.m4a', 'ظي.m4a'], bg: "/bg_17.jpg", accent: "text-stone-900" },
@@ -34,7 +34,7 @@ const LETTER_CONFIG = {
   'kaf': { char: 'ك', mode: 'runner', shapes: ['كـ', 'ـكـ', 'ـك'], sounds: ['كا.m4a', 'كو.m4a', 'كي.m4a'], bg: "/bg_20.jpg", accent: "text-blue-700" },
   'lam': { char: 'ل', mode: 'runner', shapes: ['لـ', 'ـلـ', 'ـل'], sounds: ['لَ.m4a', 'لو.m4a', 'لي.m4a'], bg: "/bg_21.jpg", accent: "text-blue-600" },
 
-  // MODE: LANTERN (Bottom to Top) - 7 Letters
+  // MODE: LANTERN (Bottom to Top)
   'ghayn': { char: 'غ', mode: 'lantern', shapes: ['غـ', 'ـغـ', 'ـغ'], sounds: ['غا.m4a', 'غو.m4a', 'غي.m4a'], bg: "/bg_22.jpg", accent: "text-purple-900" },
   'qaf': { char: 'ق', mode: 'lantern', shapes: ['قـ', 'ـقـ', 'ـق'], sounds: ['ققا.m4a', 'قو.m4a', 'قي.m4a'], bg: "/bg_23.jpg", accent: "text-red-900" },
   'meem': { char: 'م', mode: 'lantern', shapes: ['مـ', 'ـمـ', 'ـم'], sounds: ['ما.m4a', 'مو.m4a', 'مي.m4a'], bg: "/bg_24.jpg", accent: "text-fuchsia-800" },
@@ -214,7 +214,7 @@ const App = () => {
           @keyframes slideUp { 0% { transform: translateY(40px); opacity: 0; } 20% { transform: translateY(0); opacity: 1; } 80% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
           @keyframes rotateShamsa { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
           @keyframes hitPulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
-          @keyframes whackUp { 0% { transform: translateY(100%); opacity: 0.5; } 15% { transform: translateY(-40%); opacity: 1; } 85% { transform: translateY(-40%); opacity: 1; } 100% { transform: translateY(100%); opacity: 0.5; } }
+          @keyframes whackUp { 0% { transform: translateY(100%); opacity: 0.5; } 15% { transform: translateY(-45%); opacity: 1; } 85% { transform: translateY(-45%); opacity: 1; } 100% { transform: translateY(100%); opacity: 0.5; } }
           @keyframes runLeft { 0% { transform: translateX(100vw); } 100% { transform: translateX(-150px); } }
           @keyframes floatUp { 0% { transform: translateY(100vh) scale(0.8); } 100% { transform: translateY(-150px) scale(1.2); } }
           @keyframes fanousGlow { 0% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.4); } 50% { box-shadow: 0 0 40px rgba(251, 191, 36, 0.7); } 100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.4); } }
@@ -320,18 +320,18 @@ const App = () => {
           {/* ENGINE: SAND WHACK */}
           {currentLetter.mode === 'whack' && (
             <div className="absolute inset-0 flex items-center justify-center p-4">
-              <div className="grid grid-cols-3 grid-rows-3 gap-12 w-full max-w-xl aspect-square">
+              <div className="grid grid-cols-3 grid-rows-3 gap-12 w-full max-w-xl aspect-square overflow-visible">
                 {[...Array(9)].map((_, i) => {
                   const el = elements.find(e => e.holeIndex === i);
                   return (
-                    <div key={i} className="relative w-full h-full dune-hole rounded-full flex items-end justify-center border-b-4 border-white/20 overflow-hidden">
+                    <div key={i} className="relative w-full h-full dune-hole rounded-full flex items-end justify-center border-b-4 border-white/20 overflow-visible">
                       {el && (
                         <button
                           onPointerDown={(e) => handleCatch(el.id, e.clientX, e.clientY)}
                           style={{ animationDuration: `${currentLevel.speed * 0.9}s` }}
-                          className="letter-whack relative w-5/6 h-[115%] bg-white rounded-t-[3rem] shadow-2xl flex items-center justify-center ultra-sensitive-hitbox outline-none touch-none active:scale-90 active:animate-[hitPulse_0.2s_ease-out]"
+                          className="letter-whack relative w-5/6 h-[140%] bg-white rounded-t-[3rem] shadow-2xl flex items-center justify-center ultra-sensitive-hitbox outline-none touch-none active:scale-90 active:animate-[hitPulse_0.2s_ease-out]"
                         >
-                          <span className={`text-7xl font-bold ${currentLetter.accent} arabic-font pb-6`}>{el.shape}</span>
+                          <span className={`text-7xl font-bold ${currentLetter.accent} arabic-font pb-12`}>{el.shape}</span>
                         </button>
                       )}
                     </div>
