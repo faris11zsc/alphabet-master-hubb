@@ -70,7 +70,7 @@ const App = () => {
     bgMusicRef.current.preload = "auto";
   }, []);
 
-  // TURBO UNLOCKER: Ensures all audio is cached and ready to fire
+  // TURBO UNLOCKER: Silent fire to wake up browser audio engine
   const unlockAllAudio = useCallback(() => {
     ALPHABET_KEYS.forEach(key => {
       const config = LETTER_CONFIG[key];
@@ -78,7 +78,6 @@ const App = () => {
         if (!audioRefs.current[filename]) {
           const audio = new Audio(`/audio/${filename}`);
           audio.preload = "auto";
-          // Silent load to wake up browser audio engine
           audio.volume = 0;
           audio.play().then(() => {
             audio.pause();
@@ -91,11 +90,16 @@ const App = () => {
     });
   }, []);
 
-  const handleEnterHub = () => {
-    setGameState('menu');
-    bgMusicRef.current?.play().catch(() => {});
-    unlockAllAudio(); // Unlock everything on first interaction
-  };
+  // DASHBOARD MUSIC LOGIC: Stop if NOT in menu
+  useEffect(() => {
+    if (gameState === 'menu') {
+      bgMusicRef.current?.play().catch(() => {});
+      unlockAllAudio();
+    } else {
+      bgMusicRef.current?.pause();
+      if (bgMusicRef.current) bgMusicRef.current.currentTime = 0;
+    }
+  }, [gameState, unlockAllAudio]);
 
   const getLevelData = (s) => {
     if (s < 10) return { level: 1, name: "Beginner", speed: 2.0, spawnRate: 1000, color: "text-sky-300" };
@@ -159,7 +163,7 @@ const App = () => {
             if (el) handleMiss(el.id);
             return prev;
           });
-        }, currentLevel.speed * 1100);
+        }, currentLevel.speed * 1200);
       }
     }, currentLevel.spawnRate);
     return () => clearInterval(spawnInterval);
@@ -168,7 +172,7 @@ const App = () => {
   const handleCatch = (id, clientX, clientY) => {
     if (gameState !== 'playing') return;
     
-    // Instant Trigger
+    // Instant Trigger from Cache
     const sounds = currentLetter.sounds;
     const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
     const cachedAudio = audioRefs.current[randomSound];
@@ -221,7 +225,7 @@ const App = () => {
           @keyframes slideUp { 0% { transform: translateY(40px); opacity: 0; } 20% { transform: translateY(0); opacity: 1; } 80% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
           @keyframes rotateShamsa { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
           @keyframes hitPulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
-          @keyframes whackUp { 0% { transform: translateY(100%); } 15% { transform: translateY(0%); } 85% { transform: translateY(0%); } 100% { transform: translateY(100%); } }
+          @keyframes whackUp { 0% { transform: translateY(100%); } 15% { transform: translateY(-25%); } 85% { transform: translateY(-25%); } 100% { transform: translateY(100%); } }
           @keyframes runLeft { 0% { transform: translateX(100vw); } 100% { transform: translateX(-150px); } }
           @keyframes floatUp { 0% { transform: translateY(100vh) scale(0.8); } 100% { transform: translateY(-150px) scale(1.2); } }
           .letter-fall { animation: fall linear forwards; }
@@ -243,13 +247,13 @@ const App = () => {
         `}
       </style>
 
-      {/* SPLASH SCREEN (Logo Removed) */}
+      {/* SPLASH SCREEN (Clean portal) */}
       {gameState === 'splash' && (
         <div className="absolute inset-0 z-[500] flex flex-col items-center justify-center bg-[#F5F5DC] overflow-hidden p-6">
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.05] pointer-events-none scale-[2]">
              <div className="relative w-96 h-96 shamsa-medallion rounded-full animate-[rotateShamsa_120s_linear_infinite]" />
           </div>
-          <button onClick={handleEnterHub} className="group relative px-24 py-12 bg-[#800000] text-[#D4AF37] text-6xl font-black rounded-[3.5rem] shadow-2xl border-4 border-[#D4AF37] z-[510] tracking-widest italic uppercase active:scale-95 transition-transform">ENTER HUB</button>
+          <button onClick={() => { setGameState('menu'); }} className="group relative px-24 py-12 bg-[#800000] text-[#D4AF37] text-6xl font-black rounded-[3.5rem] shadow-2xl border-4 border-[#D4AF37] z-[510] tracking-widest italic uppercase active:scale-95 transition-transform">ENTER HUB</button>
         </div>
       )}
 
@@ -306,30 +310,21 @@ const App = () => {
             </div>
           </div>
 
-          {showLevelUp && (
-            <div className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none">
-              <div className="level-up-banner text-center">
-                <h2 className="text-8xl font-black text-white drop-shadow-2xl tracking-tighter uppercase italic">LEVEL {currentLevel.level}</h2>
-                <div className={`mt-2 px-8 py-2 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-md text-2xl font-black uppercase tracking-[0.4em] ${currentLevel.color}`}>{currentLevel.name}</div>
-              </div>
-            </div>
-          )}
-
-          {/* ENGINE: SAND WHACK (Natural Hole Pop-up) */}
+          {/* ENGINE: SAND WHACK (Exaggerated & Fully Visible) */}
           {currentLetter.mode === 'whack' && (
             <div className="absolute inset-0 flex items-center justify-center p-4">
-              <div className="grid grid-cols-3 grid-rows-3 gap-12 w-full max-w-lg aspect-square">
+              <div className="grid grid-cols-3 grid-rows-3 gap-10 w-full max-w-lg aspect-square overflow-visible">
                 {[...Array(9)].map((_, i) => {
                   const el = elements.find(e => e.holeIndex === i);
                   return (
-                    <div key={i} className="relative w-full h-full dune-hole rounded-full flex items-end justify-center border-b-4 border-white/20 overflow-hidden">
+                    <div key={i} className="relative w-full h-full dune-hole rounded-full flex items-end justify-center border-b-4 border-white/20 overflow-visible">
                       {el && (
                         <button
                           onPointerDown={(e) => handleCatch(el.id, e.clientX, e.clientY)}
                           style={{ animationDuration: `${currentLevel.speed * 0.9}s` }}
                           className="letter-whack relative w-full h-full bg-white rounded-t-[2rem] shadow-2xl flex items-center justify-center ultra-sensitive-hitbox outline-none touch-none active:scale-95"
                         >
-                          <span className={`text-6xl font-bold ${currentLetter.accent} arabic-font`}>{el.shape}</span>
+                          <span className={`text-8xl font-black ${currentLetter.accent} arabic-font`}>{el.shape}</span>
                         </button>
                       )}
                     </div>
@@ -345,7 +340,7 @@ const App = () => {
               {elements.map((l) => (
                 <button key={l.id} onPointerDown={(e) => handleCatch(l.id, e.clientX, e.clientY)} onAnimationEnd={() => handleMiss(l.id)} style={{ left: `${l.left}%`, animationDuration: `${l.duration}s` }} className="letter-fall absolute cursor-pointer ultra-sensitive-hitbox outline-none touch-none z-10">
                   <div className="w-24 h-24 bg-white rounded-[2rem] shadow-2xl flex items-center justify-center border-b-8 border-slate-200 transition-transform active:scale-90 active:animate-[hitPulse_0.2s_ease-out]">
-                    <span className={`text-6xl font-bold ${currentLetter.accent} arabic-font`}>{l.shape}</span>
+                    <span className={`text-7xl font-bold ${currentLetter.accent} arabic-font`}>{l.shape}</span>
                   </div>
                 </button>
               ))}
@@ -358,7 +353,7 @@ const App = () => {
               {elements.map((l) => (
                 <button key={l.id} onPointerDown={(e) => handleCatch(l.id, e.clientX, e.clientY)} onAnimationEnd={() => handleMiss(l.id)} style={{ top: `${l.top}%`, animationDuration: `${l.duration}s` }} className="letter-run absolute cursor-pointer ultra-sensitive-hitbox outline-none touch-none z-10">
                   <div className="w-24 h-32 bg-[#FDF5E6] scroll-shape shadow-2xl flex items-center justify-center transition-transform active:scale-90 active:animate-[hitPulse_0.2s_ease-out]">
-                    <span className={`text-6xl font-bold ${currentLetter.accent} arabic-font`}>{l.shape}</span>
+                    <span className={`text-7xl font-bold ${currentLetter.accent} arabic-font`}>{l.shape}</span>
                   </div>
                 </button>
               ))}
@@ -371,7 +366,7 @@ const App = () => {
               {elements.map((l) => (
                 <button key={l.id} onPointerDown={(e) => handleCatch(l.id, e.clientX, e.clientY)} onAnimationEnd={() => handleMiss(l.id)} style={{ left: `${l.left}%`, animationDuration: `${l.duration}s` }} className="letter-float absolute cursor-pointer ultra-sensitive-hitbox outline-none touch-none z-10">
                   <div className="w-24 h-36 bg-white/90 fanous-shape shadow-2xl flex flex-col items-center justify-center border-t-8 border-yellow-500 transition-transform active:scale-90 active:animate-[hitPulse_0.2s_ease-out]">
-                    <span className={`text-6xl font-bold ${currentLetter.accent} arabic-font`}>{l.shape}</span>
+                    <span className={`text-7xl font-bold ${currentLetter.accent} arabic-font`}>{l.shape}</span>
                     <div className="w-3 h-6 bg-yellow-500 rounded-t-full mt-2" />
                   </div>
                 </button>
