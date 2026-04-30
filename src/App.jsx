@@ -2,37 +2,45 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Play, RotateCcw, Heart, Star, Trophy, Zap, ChevronLeft } from 'lucide-react';
 
 // ==========================================
-// ENHANCED ALPHABET CONFIGURATION
+// 4-MODE ALPHABET CONFIGURATION
 // ==========================================
+// Distribution strategy: Separating similar-looking letters across different modes.
 const LETTER_CONFIG = {
+  // MODE: RAIN (Falling Down)
   'hamza': { char: 'أ', mode: 'rain', shapes: ['أ', 'ـأ', 'إ'], sounds: ['ءا.m4a', 'ءو.m4a', 'ءي.m4a'], bg: "from-sky-700 via-blue-800 to-indigo-950", accent: "text-blue-600" },
-  'ba': { char: 'ب', mode: 'whack', shapes: ['بـ', 'ـبـ', 'ـب'], sounds: ['ب.m4a', 'بو.m4a', 'بي.m4a'], bg: "from-emerald-700 via-green-800 to-teal-950", accent: "text-green-600" },
-  'ta': { char: 'ت', mode: 'whack', shapes: ['تـ', 'ـتـ', 'ـت'], sounds: ['تا.m4a', 'تو.m4a', 'تي.m4a'], bg: "from-rose-700 via-red-800 to-orange-950", accent: "text-red-600" },
-  'tha': { char: 'ث', mode: 'whack', shapes: ['ثـ', 'ـثـ', 'ـث'], sounds: ['ثا.m4a', 'ثو.m4a', 'ثي.m4a'], bg: "from-purple-700 via-indigo-800 to-black", accent: "text-indigo-600" },
+  'ba': { char: 'ب', mode: 'rain', shapes: ['بـ', 'ـبـ', 'ـب'], sounds: ['ب.m4a', 'بو.m4a', 'بي.m4a'], bg: "from-emerald-700 via-green-800 to-teal-950", accent: "text-green-600" },
   'jeem': { char: 'ج', mode: 'rain', shapes: ['جـ', 'ـجـ', 'ـج'], sounds: ['جا.m4a', 'جو.m4a', 'جي.m4a'], bg: "from-orange-700 via-amber-800 to-yellow-950", accent: "text-amber-600" },
-  'haa': { char: 'ح', mode: 'rain', shapes: ['حـ', 'ـحـ', 'ـح'], sounds: ['حا.m4a', 'حو.m4a', 'حي.m4a'], bg: "from-teal-700 via-cyan-800 to-blue-900", accent: "text-cyan-600" },
-  'kha': { char: 'خ', mode: 'rain', shapes: ['خـ', 'ـخـ', 'ـخ'], sounds: ['خا.m4a', 'خو.m4a', 'خي.m4a'], bg: "from-slate-800 via-slate-900 to-black", accent: "text-slate-800" },
   'dal': { char: 'د', mode: 'rain', shapes: ['د', 'ـد', 'د'], sounds: ['دا.m4a', 'دو.m4a', 'دي.m4a'], bg: "from-red-700 via-rose-800 to-pink-950", accent: "text-rose-600" },
-  'thal': { char: 'ذ', mode: 'rain', shapes: ['ذ', 'ـذ', 'ذ'], sounds: ['ذا.m4a', 'ذو.m4a', 'ذي.m4a'], bg: "from-yellow-600 via-orange-700 to-amber-900", accent: "text-orange-700" },
   'raa': { char: 'ر', mode: 'rain', shapes: ['ر', 'ـر', 'ر'], sounds: ['را.m4a', 'رو.m4a', 'ري.m4a'], bg: "from-lime-700 via-green-800 to-emerald-950", accent: "text-green-700" },
-  'zay': { char: 'ز', mode: 'rain', shapes: ['ز', 'ـز', 'ز'], sounds: ['زا.m4a', 'زو.m4a', 'زي.m4a'], bg: "from-green-700 via-teal-800 to-cyan-950", accent: "text-teal-800" },
   'seen': { char: 'س', mode: 'rain', shapes: ['سـ', 'ـسـ', 'ـس'], sounds: ['س.m4a', 'سو.m4a', 'سي.m4a'], bg: "from-blue-700 via-indigo-800 to-violet-950", accent: "text-indigo-700" },
-  'sheen': { char: 'ش', mode: 'rain', shapes: ['شـ', 'ـشـ', 'ـش'], sounds: ['شا.m4a', 'شو.m4a', 'شي.m4a'], bg: "from-violet-700 via-purple-800 to-fuchsia-950", accent: "text-purple-700" },
   'sad': { char: 'ص', mode: 'rain', shapes: ['صـ', 'ـصـ', 'ـص'], sounds: ['صا.m4a', 'صو.m4a', 'صي.m4a'], bg: "from-stone-700 via-stone-900 to-black", accent: "text-stone-700" },
-  'dad': { char: 'ض', mode: 'rain', shapes: ['ضـ', 'ـضـ', 'ـض'], sounds: ['ضا.m4a', 'ضو.m4a', 'ضي.m4a'], bg: "from-emerald-800 via-green-950 to-black", accent: "text-green-900" },
-  'taa': { char: 'ط', mode: 'rain', shapes: ['طـ', 'ـطـ', 'ـط'], sounds: ['طا.m4a', 'طو.m4a', 'طي.m4a'], bg: "from-amber-800 via-orange-900 to-red-950", accent: "text-orange-900" },
-  'zaa': { char: 'ظ', mode: 'rain', shapes: ['ظـ', 'ـظـ', 'ـظ'], sounds: ['ظا.m4a', 'ظو.m4a', 'ظي.m4a'], bg: "from-orange-900 via-stone-900 to-black", accent: "text-stone-900" },
-  'ayn': { char: 'ع', mode: 'rain', shapes: ['عـ', 'ـعـ', 'ـع'], sounds: ['عا.m4a', 'عو.m4a', 'عي.m4a'], bg: "from-sky-700 via-blue-900 to-black", accent: "text-blue-900" },
-  'ghayn': { char: 'غ', mode: 'rain', shapes: ['غـ', 'ـغـ', 'ـغ'], sounds: ['غا.m4a', 'غو.m4a', 'غي.m4a'], bg: "from-indigo-700 via-purple-900 to-black", accent: "text-purple-900" },
-  'faa': { char: 'ف', mode: 'rain', shapes: ['فـ', 'ـفـ', 'ـف'], sounds: ['ف.m4a', 'فو.m4a', 'في.m4a'], bg: "from-pink-700 via-rose-900 to-black", accent: "text-rose-700" },
-  'qaf': { char: 'ق', mode: 'rain', shapes: ['قـ', 'ـقـ', 'ـق'], sounds: ['ققا.m4a', 'قو.m4a', 'قي.m4a'], bg: "from-red-800 via-red-950 to-black", accent: "text-red-900" },
-  'kaf': { char: 'ك', mode: 'rain', shapes: ['كـ', 'ـكـ', 'ـك'], sounds: ['كا.m4a', 'كو.m4a', 'كي.m4a'], bg: "from-blue-600 via-blue-800 to-black", accent: "text-blue-700" },
-  'lam': { char: 'ل', mode: 'rain', shapes: ['لـ', 'ـلـ', 'ـل'], sounds: ['لَ.m4a', 'لو.m4a', 'لي.m4a'], bg: "from-cyan-700 via-blue-800 to-black", accent: "text-blue-600" },
-  'meem': { char: 'م', mode: 'rain', shapes: ['مـ', 'ـمـ', 'ـم'], sounds: ['ما.m4a', 'مو.m4a', 'مي.m4a'], bg: "from-violet-700 via-fuchsia-900 to-black", accent: "text-fuchsia-800" },
-  'noon': { char: 'ن', mode: 'rain', shapes: ['نـ', 'ـنـ', 'ـن'], sounds: ['نا.m4a', 'نو.m4a', 'ني.m4a'], bg: "from-green-700 via-emerald-900 to-black", accent: "text-emerald-800" },
-  'haa2': { char: 'ه', mode: 'rain', shapes: ['هـ', 'ـهـ', 'ـه'], sounds: ['ها.m4a', 'هو.m4a', 'هي.m4a'], bg: "from-orange-600 via-yellow-700 to-black", accent: "text-yellow-700" },
-  'waw': { char: 'و', mode: 'rain', shapes: ['و', 'ـو', 'و'], sounds: ['وا.m4a', 'وو.m4a', 'وي.m4a'], bg: "from-blue-800 via-indigo-950 to-black", accent: "text-indigo-800" },
-  'yaa': { char: 'ي', mode: 'rain', shapes: ['يـ', 'ـيـ', 'ـي'], sounds: ['ي.m4a', 'يو.m4a', 'يي.m4a'], bg: "from-teal-600 via-emerald-900 to-black", accent: "text-teal-800" },
+
+  // MODE: WHACK (Popping Up)
+  'ta': { char: 'ت', mode: 'whack', shapes: ['تـ', 'ـتـ', 'ـت'], sounds: ['تا.m4a', 'تو.m4a', 'تي.m4a'], bg: "from-rose-700 via-red-800 to-orange-950", accent: "text-red-600" },
+  'haa': { char: 'ح', mode: 'whack', shapes: ['حـ', 'ـحـ', 'ـح'], sounds: ['حا.m4a', 'حو.m4a', 'حي.m4a'], bg: "from-teal-700 via-cyan-800 to-blue-900", accent: "text-cyan-600" },
+  'thal': { char: 'ذ', mode: 'whack', shapes: ['ذ', 'ـذ', 'ذ'], sounds: ['ذا.m4a', 'ذو.m4a', 'ذي.m4a'], bg: "from-yellow-600 via-orange-700 to-amber-900", accent: "text-orange-700" },
+  'zay': { char: 'ز', mode: 'whack', shapes: ['ز', 'ـز', 'ز'], sounds: ['زا.m4a', 'زو.m4a', 'زي.m4a'], bg: "from-green-700 via-teal-800 to-cyan-950", accent: "text-teal-800" },
+  'sheen': { char: 'ش', mode: 'whack', shapes: ['شـ', 'ـشـ', 'ـش'], sounds: ['شا.m4a', 'شو.m4a', 'شي.m4a'], bg: "from-violet-700 via-purple-800 to-fuchsia-950", accent: "text-purple-700" },
+  'dad': { char: 'ض', mode: 'whack', shapes: ['ضـ', 'ـضـ', 'ـض'], sounds: ['ضا.m4a', 'ضو.m4a', 'ضي.m4a'], bg: "from-emerald-800 via-green-950 to-black", accent: "text-green-900" },
+  'taa': { char: 'ط', mode: 'whack', shapes: ['طـ', 'ـطـ', 'ـط'], sounds: ['طا.m4a', 'طو.m4a', 'طي.m4a'], bg: "from-amber-800 via-orange-900 to-red-950", accent: "text-orange-900" },
+
+  // MODE: RUNNER (Right to Left)
+  'tha': { char: 'ث', mode: 'runner', shapes: ['ثـ', 'ـثـ', 'ـث'], sounds: ['ثا.m4a', 'ثو.m4a', 'ثي.m4a'], bg: "from-purple-700 via-indigo-800 to-black", accent: "text-indigo-600" },
+  'kha': { char: 'خ', mode: 'runner', shapes: ['خـ', 'ـخـ', 'ـخ'], sounds: ['خا.m4a', 'خو.m4a', 'خي.m4a'], bg: "from-slate-800 via-slate-900 to-black", accent: "text-slate-800" },
+  'zaa': { char: 'ظ', mode: 'runner', shapes: ['ظـ', 'ـظـ', 'ـظ'], sounds: ['ظا.m4a', 'ظو.m4a', 'ظي.m4a'], bg: "from-orange-900 via-stone-900 to-black", accent: "text-stone-900" },
+  'ayn': { char: 'ع', mode: 'runner', shapes: ['عـ', 'ـعـ', 'ـع'], sounds: ['عا.m4a', 'عو.m4a', 'عي.m4a'], bg: "from-sky-700 via-blue-900 to-black", accent: "text-blue-900" },
+  'faa': { char: 'ف', mode: 'runner', shapes: ['فـ', 'ـفـ', 'ـف'], sounds: ['ف.m4a', 'فو.m4a', 'في.m4a'], bg: "from-pink-700 via-rose-900 to-black", accent: "text-rose-700" },
+  'kaf': { char: 'ك', mode: 'runner', shapes: ['كـ', 'ـكـ', 'ـك'], sounds: ['كا.m4a', 'كو.m4a', 'كي.m4a'], bg: "from-blue-600 via-blue-800 to-black", accent: "text-blue-700" },
+  'lam': { char: 'ل', mode: 'runner', shapes: ['لـ', 'ـلـ', 'ـل'], sounds: ['لَ.m4a', 'لو.m4a', 'لي.m4a'], bg: "from-cyan-700 via-blue-800 to-black", accent: "text-blue-600" },
+
+  // MODE: LANTERN (Bottom to Top)
+  'ghayn': { char: 'غ', mode: 'lantern', shapes: ['غـ', 'ـغـ', 'ـغ'], sounds: ['غا.m4a', 'غو.m4a', 'غي.m4a'], bg: "from-indigo-700 via-purple-900 to-black", accent: "text-purple-900" },
+  'qaf': { char: 'ق', mode: 'lantern', shapes: ['قـ', 'ـقـ', 'ـق'], sounds: ['ققا.m4a', 'قو.m4a', 'قي.m4a'], bg: "from-red-800 via-red-950 to-black", accent: "text-red-900" },
+  'meem': { char: 'م', mode: 'lantern', shapes: ['مـ', 'ـمـ', 'ـم'], sounds: ['ما.m4a', 'مو.m4a', 'مي.m4a'], bg: "from-violet-700 via-fuchsia-900 to-black", accent: "text-fuchsia-800" },
+  'noon': { char: 'ن', mode: 'lantern', shapes: ['نـ', 'ـنـ', 'ـن'], sounds: ['نا.m4a', 'نو.m4a', 'ني.m4a'], bg: "from-green-700 via-emerald-900 to-black", accent: "text-emerald-800" },
+  'haa2': { char: 'ه', mode: 'lantern', shapes: ['هـ', 'ـهـ', 'ـه'], sounds: ['ها.m4a', 'هو.m4a', 'هي.m4a'], bg: "from-orange-600 via-yellow-700 to-black", accent: "text-yellow-700" },
+  'waw': { char: 'و', mode: 'lantern', shapes: ['و', 'ـو', 'و'], sounds: ['وا.m4a', 'وو.m4a', 'وي.m4a'], bg: "from-blue-800 via-indigo-950 to-black", accent: "text-indigo-800" },
+  'yaa': { char: 'ي', mode: 'lantern', shapes: ['يـ', 'ـيـ', 'ـي'], sounds: ['ي.m4a', 'يو.m4a', 'يي.m4a'], bg: "from-teal-600 via-emerald-900 to-black", accent: "text-teal-800" },
 };
 
 const App = () => {
@@ -40,7 +48,7 @@ const App = () => {
   const [gameState, setGameState] = useState('splash');
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
-  const [elements, setElements] = useState([]); // Shared for falling & whacking
+  const [elements, setElements] = useState([]);
   const [floatingTexts, setFloatingTexts] = useState([]);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -119,7 +127,7 @@ const App = () => {
     setSelectedLetterKey(null);
   };
 
-  // --- DYNAMIC SPAWNER (RAIN vs WHACK) ---
+  // --- MULTI-ENGINE SPAWNER ---
   useEffect(() => {
     if (gameState !== 'playing') return;
     const spawnInterval = setInterval(() => {
@@ -128,27 +136,28 @@ const App = () => {
         const shape = currentLetter.shapes[Math.floor(Math.random() * 3)];
         
         if (currentLetter.mode === 'whack') {
-          // Whack logic: pick a hole (0-8)
           const holeIndex = Math.floor(Math.random() * 9);
-          // Only spawn if hole is empty
           if (prev.find(e => e.holeIndex === holeIndex)) return prev;
           return [...prev, { id, holeIndex, shape, type: 'whack' }];
+        } else if (currentLetter.mode === 'runner') {
+          return [...prev, { id, top: Math.floor(Math.random() * 70) + 15, shape, duration: currentLevel.speed * 1.5, type: 'runner' }];
+        } else if (currentLetter.mode === 'lantern') {
+          return [...prev, { id, left: Math.floor(Math.random() * 80) + 10, shape, duration: currentLevel.speed * 1.8, type: 'lantern' }];
         } else {
-          // Rain logic: pick a left %
+          // Rain mode
           return [...prev, { id, left: Math.floor(Math.random() * 80) + 10, shape, duration: currentLevel.speed, type: 'rain' }];
         }
       });
 
-      // For whack mode, clear the letter after a timeout
       if (currentLetter.mode === 'whack') {
-        const idToClear = Date.now(); // approximate
+        const idToClear = Date.now();
         setTimeout(() => {
           setElements(prev => {
             const el = prev.find(e => e.type === 'whack' && e.id < idToClear + 100);
             if (el) handleMiss(el.id);
             return prev;
           });
-        }, currentLevel.speed * 1000);
+        }, currentLevel.speed * 1200); // Allow more time for whack visibility
       }
     }, currentLevel.spawnRate);
     return () => clearInterval(spawnInterval);
@@ -177,7 +186,6 @@ const App = () => {
     setElements((prev) => {
       const exists = prev.find(l => l.id === id);
       if (!exists) return prev;
-      
       setLives((l) => {
         const newLives = l - 1;
         if (newLives <= 0) setGameState('gameover');
@@ -197,11 +205,15 @@ const App = () => {
           @keyframes slideUp { 0% { transform: translateY(40px); opacity: 0; } 20% { transform: translateY(0); opacity: 1; } 80% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
           @keyframes rotateShamsa { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
           @keyframes hitPulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
-          @keyframes whackUp { 0% { transform: translateY(100%); } 20% { transform: translateY(0); } 80% { transform: translateY(0); } 100% { transform: translateY(100%); } }
+          @keyframes whackUp { 0% { transform: translateY(100%); } 15% { transform: translateY(0); } 85% { transform: translateY(0); } 100% { transform: translateY(100%); } }
+          @keyframes runLeft { 0% { transform: translateX(100vw); } 100% { transform: translateX(-150px); } }
+          @keyframes floatUp { 0% { transform: translateY(100vh) scale(0.8); } 100% { transform: translateY(-150px) scale(1.2); } }
           .letter-fall { animation: fall linear forwards; }
           .score-float { animation: popOut 0.8s ease-out forwards; }
           .level-up-banner { animation: slideUp 2s ease-in-out forwards; }
-          .letter-whack { animation: whackUp linear forwards; }
+          .letter-whack { animation: whackUp ease-in-out forwards; }
+          .letter-run { animation: runLeft linear forwards; }
+          .letter-float { animation: floatUp linear forwards; }
           .arabic-font { font-family: 'Amiri', serif; }
           .shamsa-medallion {
             background: radial-gradient(circle, #800000 10%, #008080 30%, #40E0D0 50%, transparent 70%);
@@ -219,13 +231,13 @@ const App = () => {
         <div className="absolute inset-0 z-[500] flex flex-col items-center justify-center bg-black overflow-hidden">
           <div className="absolute inset-0 splash-bg" style={{ backgroundImage: `url(${isMobile ? "/splash_mobile.png" : "/splash_pc.png"})`, opacity: 0.85 }} />
           <div className="absolute inset-0 bg-black/30" />
-          <button onClick={() => { setGameState('menu'); bgMusicRef.current?.play().catch(() => {}); }} className="group relative px-16 py-6 bg-[#800000] text-[#D4AF37] text-3xl font-black rounded-3xl shadow-[0_0_40px_rgba(128,0,0,0.6)] border-2 border-[#D4AF37] z-[510] tracking-widest italic">ENTER HUB</button>
+          <button onClick={() => { setGameState('menu'); bgMusicRef.current?.play().catch(() => {}); }} className="group relative px-16 py-6 bg-[#800000] text-[#D4AF37] text-3xl font-black rounded-3xl shadow-[0_0_40px_rgba(128,0,0,0.6)] border-2 border-[#D4AF37] z-[510] tracking-widest italic uppercase">ENTER HUB</button>
         </div>
       )}
 
       {/* DASHBOARD */}
       {gameState === 'menu' && (
-        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-start p-8 bg-[#F5F5DC] overflow-y-auto scroll-smooth">
+        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-start p-8 bg-[#F5F5DC] overflow-y-auto scroll-smooth pb-24">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none scale-150">
              <div className="relative w-96 h-96 shamsa-medallion rounded-full animate-[rotateShamsa_120s_linear_infinite]" />
           </div>
@@ -236,7 +248,7 @@ const App = () => {
           <div className="grid grid-cols-4 md:grid-cols-7 gap-6 w-full max-w-5xl relative z-10">
             {Object.keys(LETTER_CONFIG).map((key) => (
               <button key={key} onClick={() => startGame(key)} className="aspect-square bg-[#008080]/10 hover:bg-[#008080]/20 border border-[#D4AF37]/30 rounded-3xl flex flex-col items-center justify-center transition-all transform hover:scale-105 active:scale-90 group shadow-lg">
-                <span className="text-5xl font-bold text-[#800000] group-hover:text-[#40E0D0] transition-colors arabic-font drop-shadow-sm">{LETTER_CONFIG[key].char}</span>
+                <span className="text-5xl font-bold text-[#800000] group-hover:text-[#40E0D0] transition-colors arabic-font drop-shadow-sm uppercase">{LETTER_CONFIG[key].char}</span>
                 <span className="text-[9px] text-stone-500 uppercase mt-2 font-black tracking-widest">{key}</span>
               </button>
             ))}
@@ -276,18 +288,18 @@ const App = () => {
           {/* ENGINE: SAND WHACK */}
           {currentLetter.mode === 'whack' && (
             <div className="absolute inset-0 flex items-center justify-center p-4">
-              <div className="grid grid-cols-3 grid-rows-3 gap-8 w-full max-w-xl aspect-square">
+              <div className="grid grid-cols-3 grid-rows-3 gap-12 w-full max-w-xl aspect-square">
                 {[...Array(9)].map((_, i) => {
-                  const element = elements.find(e => e.holeIndex === i);
+                  const el = elements.find(e => e.holeIndex === i);
                   return (
-                    <div key={i} className="relative w-full h-full dune-hole rounded-full flex items-end justify-center overflow-hidden border-b-2 border-white/10">
-                      {element && (
+                    <div key={i} className="relative w-full h-full dune-hole rounded-full flex items-end justify-center border-b-4 border-white/20 overflow-hidden">
+                      {el && (
                         <button
-                          onPointerDown={(e) => handleCatch(element.id, e.clientX, e.clientY)}
-                          style={{ animationDuration: `${currentLevel.speed}s` }}
-                          className="letter-whack relative w-4/5 h-[80%] bg-white rounded-t-full shadow-2xl flex items-center justify-center ultra-sensitive-hitbox outline-none touch-none active:scale-90 active:animate-[hitPulse_0.2s_ease-out]"
+                          onPointerDown={(e) => handleCatch(el.id, e.clientX, e.clientY)}
+                          style={{ animationDuration: `${currentLevel.speed * 0.8}s` }}
+                          className="letter-whack relative w-5/6 h-[120%] bg-white rounded-t-[3rem] shadow-2xl flex items-center justify-center ultra-sensitive-hitbox outline-none touch-none active:scale-90 active:animate-[hitPulse_0.2s_ease-out]"
                         >
-                          <span className={`text-6xl font-bold ${currentLetter.accent} arabic-font`}>{element.shape}</span>
+                          <span className={`text-7xl font-bold ${currentLetter.accent} arabic-font pb-8`}>{el.shape}</span>
                         </button>
                       )}
                     </div>
@@ -310,6 +322,45 @@ const App = () => {
                 >
                   <div className="w-24 h-24 bg-white rounded-[2rem] shadow-2xl flex items-center justify-center border-b-8 border-slate-200 transition-transform active:scale-90 active:animate-[hitPulse_0.2s_ease-out]">
                     <span className={`text-6xl font-bold ${currentLetter.accent} arabic-font`}>{l.shape}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* ENGINE: RUNNER */}
+          {currentLetter.mode === 'runner' && (
+            <div className="absolute inset-0">
+              {elements.map((l) => (
+                <button
+                  key={l.id}
+                  onPointerDown={(e) => handleCatch(l.id, e.clientX, e.clientY)}
+                  onAnimationEnd={() => handleMiss(l.id)}
+                  style={{ top: `${l.top}%`, animationDuration: `${l.duration}s` }}
+                  className="letter-run absolute cursor-pointer ultra-sensitive-hitbox outline-none touch-none z-10"
+                >
+                  <div className="w-24 h-24 bg-white rounded-3xl shadow-2xl flex items-center justify-center border-r-8 border-slate-200 transition-transform active:scale-90 active:animate-[hitPulse_0.2s_ease-out]">
+                    <span className={`text-6xl font-bold ${currentLetter.accent} arabic-font`}>{l.shape}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* ENGINE: LANTERN */}
+          {currentLetter.mode === 'lantern' && (
+            <div className="absolute inset-0">
+              {elements.map((l) => (
+                <button
+                  key={l.id}
+                  onPointerDown={(e) => handleCatch(l.id, e.clientX, e.clientY)}
+                  onAnimationEnd={() => handleMiss(l.id)}
+                  style={{ left: `${l.left}%`, animationDuration: `${l.duration}s` }}
+                  className="letter-float absolute cursor-pointer ultra-sensitive-hitbox outline-none touch-none z-10"
+                >
+                  <div className="w-24 h-32 bg-white/95 rounded-b-3xl rounded-t-full shadow-2xl flex flex-col items-center justify-center border-t-8 border-yellow-400 transition-transform active:scale-90 active:animate-[hitPulse_0.2s_ease-out]">
+                    <span className={`text-6xl font-bold ${currentLetter.accent} arabic-font`}>{l.shape}</span>
+                    <div className="w-4 h-4 bg-yellow-400 rounded-full animate-pulse mt-2 shadow-[0_0_10px_#FBBF24]" />
                   </div>
                 </button>
               ))}
