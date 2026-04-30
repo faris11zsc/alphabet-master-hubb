@@ -4,7 +4,7 @@ import { Play, RotateCcw, Heart, Star, Trophy, Zap, ChevronLeft, Award } from 'l
 // ==========================================
 // 4-MODE ALPHABET CONFIGURATION
 // ==========================================
-// Order: Standard Arabic Alphabet
+// Order: Standard Arabic Alphabet (أ ب ت ث ج ...)
 const ALPHABET_KEYS = [
   'hamza', 'ba', 'ta', 'tha', 'jeem', 'haa', 'kha', 
   'dal', 'thal', 'raa', 'zay', 'seen', 'sheen', 'sad', 
@@ -12,43 +12,42 @@ const ALPHABET_KEYS = [
   'kaf', 'lam', 'meem', 'noon', 'haa2', 'waw', 'yaa'
 ];
 
-// Distribution strategy: Separating similar-looking letters across 4 modes.
 const LETTER_CONFIG = {
   // Mode 1: RAIN
   'hamza': { char: 'أ', mode: 'rain', shapes: ['ء', 'ئ', 'ئـ', 'ؤ', 'أ', 'إ'], sounds: ['ءا.m4a', 'ءو.m4a', 'ءي.m4a'], bg: "from-sky-800 to-indigo-950", accent: "text-blue-500" },
-  'ta': { char: 'ت', mode: 'rain', shapes: ['ت', 'تـ', 'ـتـ', 'ـت'], sounds: ['تا.m4a', 'تو.m4a', 'تي.m4a'], bg: "from-rose-800 to-red-950", accent: "text-red-500" },
-  'kha': { char: 'خ', mode: 'rain', shapes: ['خ', 'خـ', 'ـخـ', 'ـخ'], sounds: ['خا.m4a', 'خو.m4a', 'خي.m4a'], bg: "from-slate-800 to-black", accent: "text-slate-400" },
-  'zay': { char: 'ز', mode: 'rain', shapes: ['ز', 'ـز', 'ـزـ'], sounds: ['زا.m4a', 'زو.m4a', 'زي.m4a'], bg: "from-green-800 to-emerald-950", accent: "text-emerald-500" },
+  'ba': { char: 'ب', mode: 'rain', shapes: ['ب', 'بـ', 'ـبـ', 'ـب'], sounds: ['ب.m4a', 'بو.m4a', 'بي.m4a'], bg: "from-emerald-800 to-teal-950", accent: "text-green-500" },
+  'jeem': { char: 'ج', mode: 'rain', shapes: ['ج', 'جـ', 'ـجـ', 'ـج'], sounds: ['جا.m4a', 'جو.m4a', 'جي.m4a'], bg: "from-orange-800 to-amber-950", accent: "text-orange-500" },
+  'dal': { char: 'د', mode: 'rain', shapes: ['د', 'ـد', 'ـدـ'], sounds: ['دا.m4a', 'دو.m4a', 'دي.m4a'], bg: "from-red-800 to-rose-950", accent: "text-rose-500" },
+  'raa': { char: 'ر', mode: 'rain', shapes: ['ر', 'ـر', 'ـرـ'], sounds: ['را.m4a', 'رو.m4a', 'ري.m4a'], bg: "from-lime-800 to-green-950", accent: "text-lime-500" },
+  'seen': { char: 'س', mode: 'rain', shapes: ['س', 'سـ', 'ـسـ', 'ـس'], sounds: ['س.m4a', 'سو.m4a', 'سي.m4a'], bg: "from-blue-800 to-violet-950", accent: "text-blue-400" },
   'sad': { char: 'ص', mode: 'rain', shapes: ['ص', 'صـ', 'ـصـ', 'ـص'], sounds: ['صا.m4a', 'صو.m4a', 'صي.m4a'], bg: "from-stone-800 to-black", accent: "text-stone-400" },
-  'ghayn': { char: 'غ', mode: 'rain', shapes: ['غ', 'غـ', 'ـغـ', 'ـغ'], sounds: ['غا.m4a', 'غو.m4a', 'غي.m4a'], bg: "from-indigo-900 to-black", accent: "text-purple-400" },
-  'kaf': { char: 'ك', mode: 'rain', shapes: ['ك', 'كـ', 'ـكـ', 'ـك'], sounds: ['كا.m4a', 'كو.m4a', 'كي.m4a'], bg: "from-blue-900 to-black", accent: "text-blue-400" },
-  'yaa': { char: 'ي', mode: 'rain', shapes: ['ي', 'يـ', 'ـيـ', 'ـي'], sounds: ['ي.m4a', 'يو.m4a', 'يي.m4a'], bg: "from-teal-900 to-black", accent: "text-teal-400" },
 
   // Mode 2: WHACK
-  'ba': { char: 'ب', mode: 'whack', shapes: ['ب', 'بـ', 'ـبـ', 'ـب'], sounds: ['ب.m4a', 'بو.m4a', 'بي.m4a'], bg: "from-emerald-800 to-teal-950", accent: "text-green-500" },
+  'ta': { char: 'ت', mode: 'whack', shapes: ['ت', 'تـ', 'ـتـ', 'ـت'], sounds: ['تا.m4a', 'تو.m4a', 'تي.m4a'], bg: "from-rose-800 to-red-950", accent: "text-red-500" },
   'haa': { char: 'ح', mode: 'whack', shapes: ['ح', 'حـ', 'ـحـ', 'ـح'], sounds: ['حا.m4a', 'حو.m4a', 'حي.m4a'], bg: "from-teal-800 to-cyan-950", accent: "text-cyan-500" },
-  'dal': { char: 'د', mode: 'whack', shapes: ['د', 'ـد', 'ـدـ'], sounds: ['دا.m4a', 'دو.m4a', 'دي.m4a'], bg: "from-red-800 to-rose-950", accent: "text-rose-500" },
-  'seen': { char: 'س', mode: 'whack', shapes: ['س', 'سـ', 'ـسـ', 'ـس'], sounds: ['س.m4a', 'سو.m4a', 'سي.m4a'], bg: "from-blue-800 to-violet-950", accent: "text-blue-400" },
+  'thal': { char: 'ذ', mode: 'whack', shapes: ['ذ', 'ـذ', 'ـذـ'], sounds: ['ذا.m4a', 'ذو.m4a', 'ذي.m4a'], bg: "from-yellow-700 to-orange-950", accent: "text-yellow-500" },
+  'zay': { char: 'ز', mode: 'whack', shapes: ['ز', 'ـز', 'ـزـ'], sounds: ['زا.m4a', 'زو.m4a', 'زي.m4a'], bg: "from-green-800 to-emerald-950", accent: "text-emerald-500" },
+  'sheen': { char: 'ش', mode: 'whack', shapes: ['ش', 'شـ', 'ـشـ', 'ـش'], sounds: ['شا.m4a', 'شو.m4a', 'شي.m4a'], bg: "from-violet-800 to-fuchsia-950", accent: "text-violet-400" },
   'dad': { char: 'ض', mode: 'whack', shapes: ['ض', 'ضـ', 'ـضـ', 'ـض'], sounds: ['ضا.m4a', 'ضو.m4a', 'ضي.m4a'], bg: "from-emerald-900 to-black", accent: "text-emerald-600" },
-  'faa': { char: 'ف', mode: 'whack', shapes: ['ف', 'فـ', 'ـفـ', 'ـف'], sounds: ['فا.m4a', 'فو.m4a', 'في.m4a'], bg: "from-pink-900 to-black", accent: "text-pink-500" },
-  'meem': { char: 'م', mode: 'whack', shapes: ['م', 'مـ', 'ـمـ', 'ـم'], sounds: ['ما.m4a', 'مو.m4a', 'مي.m4a'], bg: "from-violet-900 to-black", accent: "text-fuchsia-500" },
+  'taa': { char: 'ط', mode: 'whack', shapes: ['ط', 'طـ', 'ـطـ', 'ـط'], sounds: ['طا.m4a', 'طو.m4a', 'طي.m4a'], bg: "from-amber-800 to-orange-950", accent: "text-amber-600" },
 
   // Mode 3: RUNNER
   'tha': { char: 'ث', mode: 'runner', shapes: ['ث', 'ثـ', 'ـثـ', 'ـث'], sounds: ['ثا.m4a', 'ثو.m4a', 'ثي.m4a'], bg: "from-purple-800 to-indigo-950", accent: "text-purple-400" },
-  'jeem': { char: 'ج', mode: 'runner', shapes: ['ج', 'جـ', 'ـجـ', 'ـج'], sounds: ['جا.m4a', 'جو.m4a', 'جي.m4a'], bg: "from-orange-800 to-amber-950", accent: "text-orange-500" },
-  'thal': { char: 'ذ', mode: 'runner', shapes: ['ذ', 'ـذ', 'ـذـ'], sounds: ['ذا.m4a', 'ذو.m4a', 'ذي.m4a'], bg: "from-yellow-700 to-orange-950", accent: "text-yellow-500" },
-  'raa': { char: 'ر', mode: 'runner', shapes: ['ر', 'ـر', 'ـرـ'], sounds: ['را.m4a', 'رو.m4a', 'ري.m4a'], bg: "from-lime-800 to-green-950", accent: "text-lime-500" },
-  'sheen': { char: 'ش', mode: 'runner', shapes: ['ش', 'شـ', 'ـشـ', 'ـش'], sounds: ['شا.m4a', 'شو.m4a', 'شي.m4a'], bg: "from-violet-800 to-fuchsia-950", accent: "text-violet-400" },
-  'taa': { char: 'ط', mode: 'runner', shapes: ['ط', 'طـ', 'ـطـ', 'ـط'], sounds: ['طا.m4a', 'طو.m4a', 'طي.m4a'], bg: "from-amber-800 to-orange-950", accent: "text-amber-600" },
-  'noon': { char: 'ن', mode: 'runner', shapes: ['ن', 'نـ', 'ـنـ', 'ـن'], sounds: ['نا.m4a', 'نو.m4a', 'ني.m4a'], bg: "from-green-900 to-black", accent: "text-green-500" },
+  'kha': { char: 'خ', mode: 'runner', shapes: ['خ', 'خـ', 'ـخـ', 'ـخ'], sounds: ['خا.m4a', 'خو.m4a', 'خي.m4a'], bg: "from-slate-800 to-black", accent: "text-slate-400" },
+  'zaa': { char: 'ظ', mode: 'runner', shapes: ['ظ', 'ظـ', 'ـظـ', 'ـظ'], sounds: ['ظا.m4a', 'ظو.m4a', 'ظي.m4a'], bg: "from-orange-900 to-black", accent: "text-orange-500" },
+  'ayn': { char: 'ع', mode: 'runner', shapes: ['ع', 'عـ', 'ـعـ', 'ـع'], sounds: ['عا.m4a', 'عو.m4a', 'عي.m4a'], bg: "from-sky-900 to-black", accent: "text-sky-500" },
+  'ghayn': { char: 'غ', mode: 'runner', shapes: ['غ', 'غـ', 'ـغـ', 'ـغ'], sounds: ['غا.m4a', 'غو.m4a', 'غي.m4a'], bg: "from-indigo-900 to-black", accent: "text-indigo-400" },
+  'faa': { char: 'ف', mode: 'runner', shapes: ['ف', 'فـ', 'ـفـ', 'ـف'], sounds: ['فا.m4a', 'فو.m4a', 'في.m4a'], bg: "from-pink-900 to-black", accent: "text-pink-500" },
+  'qaf': { char: 'ق', mode: 'runner', shapes: ['ق', 'قـ', 'ـقـ', 'ـق'], sounds: ['ققا.m4a', 'قو.m4a', 'قي.m4a'], bg: "from-red-900 to-black", accent: "text-red-500" },
 
   // Mode 4: LANTERN
-  'zaa': { char: 'ظ', mode: 'lantern', shapes: ['ظ', 'ظـ', 'ـظـ', 'ـظ'], sounds: ['ظا.m4a', 'ظو.m4a', 'ظي.m4a'], bg: "from-orange-900 to-black", accent: "text-orange-500" },
-  'ayn': { char: 'ع', mode: 'lantern', shapes: ['ع', 'عـ', 'ـعـ', 'ـع'], sounds: ['عا.m4a', 'عو.m4a', 'عي.m4a'], bg: "from-sky-900 to-black", accent: "text-sky-500" },
-  'qaf': { char: 'ق', mode: 'lantern', shapes: ['ق', 'قـ', 'ـقـ', 'ـق'], sounds: ['ققا.m4a', 'قو.m4a', 'قي.m4a'], bg: "from-red-900 to-black", accent: "text-red-500" },
+  'kaf': { char: 'ك', mode: 'lantern', shapes: ['ك', 'كـ', 'ـكـ', 'ـك'], sounds: ['كا.m4a', 'كو.m4a', 'كي.m4a'], bg: "from-blue-900 to-black", accent: "text-blue-400" },
   'lam': { char: 'ل', mode: 'lantern', shapes: ['ل', 'لـ', 'ـلـ', 'ـل'], sounds: ['لَ.m4a', 'لو.m4a', 'لي.m4a'], bg: "from-cyan-900 to-black", accent: "text-cyan-500" },
+  'meem': { char: 'م', mode: 'lantern', shapes: ['م', 'مـ', 'ـمـ', 'ـم'], sounds: ['ما.m4a', 'مو.m4a', 'مي.m4a'], bg: "from-violet-900 to-black", accent: "text-fuchsia-500" },
+  'noon': { char: 'ن', mode: 'lantern', shapes: ['ن', 'نـ', 'ـنـ', 'ـن'], sounds: ['نا.m4a', 'نو.m4a', 'ني.m4a'], bg: "from-green-900 to-black", accent: "text-green-500" },
   'haa2': { char: 'ه', mode: 'lantern', shapes: ['ه', 'هـ', 'ـهـ', 'ـه'], sounds: ['ها.m4a', 'هو.m4a', 'هي.m4a'], bg: "from-orange-800 to-black", accent: "text-yellow-500" },
   'waw': { char: 'و', mode: 'lantern', shapes: ['و', 'ـو', 'ـوـ'], sounds: ['وا.m4a', 'وو.m4a', 'وي.m4a'], bg: "from-blue-900 to-black", accent: "text-indigo-500" },
+  'yaa': { char: 'ي', mode: 'lantern', shapes: ['ي', 'يـ', 'ـيـ', 'ـي'], sounds: ['ي.m4a', 'يو.m4a', 'يي.m4a'], bg: "from-teal-900 to-black", accent: "text-teal-400" },
 };
 
 const App = () => {
@@ -137,7 +136,6 @@ const App = () => {
       setElements((prev) => {
         const id = Date.now() + Math.random();
         const shape = currentLetter.shapes[Math.floor(Math.random() * currentLetter.shapes.length)];
-        
         if (currentLetter.mode === 'whack') {
           const holeIndex = Math.floor(Math.random() * 9);
           if (prev.find(e => e.holeIndex === holeIndex)) return prev;
@@ -216,10 +214,9 @@ const App = () => {
           @keyframes slideUp { 0% { transform: translateY(40px); opacity: 0; } 20% { transform: translateY(0); opacity: 1; } 80% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
           @keyframes rotateShamsa { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
           @keyframes hitPulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
-          @keyframes whackUp { 0% { transform: translateY(100%); opacity: 0; } 15% { transform: translateY(0%); opacity: 1; } 85% { transform: translateY(0%); opacity: 1; } 100% { transform: translateY(100%); opacity: 0; } }
+          @keyframes whackUp { 0% { transform: translateY(100%); } 15% { transform: translateY(5%); } 85% { transform: translateY(5%); } 100% { transform: translateY(100%); } }
           @keyframes runLeft { 0% { transform: translateX(100vw); } 100% { transform: translateX(-150px); } }
           @keyframes floatUp { 0% { transform: translateY(100vh) scale(0.8); } 100% { transform: translateY(-150px) scale(1.2); } }
-          @keyframes fanousGlow { 0% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.4); } 50% { box-shadow: 0 0 40px rgba(251, 191, 36, 0.7); } 100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.4); } }
           .letter-fall { animation: fall linear forwards; }
           .score-float { animation: popOut 0.8s ease-out forwards; }
           .level-up-banner { animation: slideUp 2s ease-in-out forwards; }
@@ -405,7 +402,7 @@ const App = () => {
       )}
 
       {/* BRANDING LOGO */}
-      <div className={`absolute bottom-8 left-8 z-[1000] transition-all duration-500 ${gameState === 'playing' ? 'opacity-[0.01] pointer-events-none' : 'opacity-[0.1]'}`}>
+      <div className={`absolute bottom-8 left-8 z-[1000] transition-all duration-500 ${gameState === 'playing' ? 'opacity-[0.01] pointer-events-none' : 'opacity-[0.05]'}`}>
         <a href="https://api.whatsapp.com/send/?phone=201554712241&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
           <img src="/logo.png" className="w-24 h-auto mb-2 contrast-125 hover:scale-105 transition-transform" />
         </a>
