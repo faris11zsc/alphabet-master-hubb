@@ -4,42 +4,44 @@ import { Play, RotateCcw, Heart, Star, Trophy, Zap, ChevronLeft, Award } from 'l
 // ==========================================
 // 4-MODE ALPHABET CONFIGURATION
 // ==========================================
+// Distribution strategy: Separating similar-looking letters (Ba/Ta/Tha, Seen/Sheen, etc.) across 4 modes.
+// Every letter now has its own unique background image (bg_1.jpg to bg_28.jpg).
 const LETTER_CONFIG = {
-  // MODE: RAIN (Falling Down)
-  'hamza': { char: 'أ', mode: 'rain', shapes: ['ء', 'ئ', 'ئـ', 'ؤ', 'أ', 'إ'], sounds: ['ءا.m4a', 'ءو.m4a', 'ءي.m4a'], bg: "/bg_night.jpg", accent: "text-blue-600" },
-  'ba': { char: 'ب', mode: 'rain', shapes: ['بـ', 'ـبـ', 'ـب'], sounds: ['ب.m4a', 'بو.m4a', 'بي.m4a'], bg: "/bg_golden.jpg", accent: "text-green-600" },
-  'jeem': { char: 'ج', mode: 'rain', shapes: ['جـ', 'ـجـ', 'ـج'], sounds: ['جا.m4a', 'جو.m4a', 'جي.m4a'], bg: "/bg_mecca.jpg", accent: "text-amber-600" },
-  'dal': { char: 'د', mode: 'rain', shapes: ['د', 'ـد', 'ـدـ'], sounds: ['دا.m4a', 'دو.m4a', 'دي.m4a'], bg: "/bg_desert.jpg", accent: "text-rose-600" },
-  'raa': { char: 'ر', mode: 'rain', shapes: ['ر', 'ـر', 'ـرـ'], sounds: ['را.m4a', 'رو.m4a', 'ري.m4a'], bg: "/bg_golden.jpg", accent: "text-green-700" },
-  'seen': { char: 'س', mode: 'rain', shapes: ['سـ', 'ـسـ', 'ـس'], sounds: ['س.m4a', 'سو.m4a', 'سي.m4a'], bg: "/bg_night.jpg", accent: "text-indigo-700" },
-  'lam': { char: 'ل', mode: 'rain', shapes: ['لـ', 'ـلـ', 'ـل'], sounds: ['لَ.m4a', 'لو.m4a', 'لي.m4a'], bg: "/bg_mecca.jpg", accent: "text-blue-600" },
+  // MODE: RAIN (Falling Down) - 7 Letters
+  'hamza': { char: 'أ', mode: 'rain', shapes: ['ء', 'ئ', 'ئـ', 'ؤ', 'أ', 'إ'], sounds: ['ءا.m4a', 'ءو.m4a', 'ءي.m4a'], bg: "/bg_1.jpg", accent: "text-blue-600" },
+  'ba': { char: 'ب', mode: 'rain', shapes: ['بـ', 'ـبـ', 'ـب'], sounds: ['ب.m4a', 'بو.m4a', 'بي.m4a'], bg: "/bg_2.jpg", accent: "text-green-600" },
+  'jeem': { char: 'ج', mode: 'rain', shapes: ['جـ', 'ـجـ', 'ـج'], sounds: ['جا.m4a', 'جو.m4a', 'جي.m4a'], bg: "/bg_3.jpg", accent: "text-amber-600" },
+  'dal': { char: 'د', mode: 'rain', shapes: ['د', 'ـد', 'ـدـ'], sounds: ['دا.m4a', 'دو.m4a', 'دي.m4a'], bg: "/bg_4.jpg", accent: "text-rose-600" },
+  'raa': { char: 'ر', mode: 'rain', shapes: ['ر', 'ـر', 'ـرـ'], sounds: ['را.m4a', 'رو.m4a', 'ري.m4a'], bg: "/bg_5.jpg", accent: "text-green-700" },
+  'seen': { char: 'س', mode: 'rain', shapes: ['سـ', 'ـسـ', 'ـس'], sounds: ['س.m4a', 'سو.m4a', 'سي.m4a'], bg: "/bg_6.jpg", accent: "text-indigo-700" },
+  'sad': { char: 'ص', mode: 'rain', shapes: ['صـ', 'ـصـ', 'ـص'], sounds: ['صا.m4a', 'صو.m4a', 'صي.m4a'], bg: "/bg_7.jpg", accent: "text-stone-700" },
 
-  // MODE: WHACK (Popping Up)
-  'ta': { char: 'ت', mode: 'whack', shapes: ['تـ', 'ـتـ', 'ـت'], sounds: ['تا.m4a', 'تو.m4a', 'تي.m4a'], bg: "/bg_golden.jpg", accent: "text-red-600" },
-  'haa': { char: 'ح', mode: 'whack', shapes: ['حـ', 'ـحـ', 'ـح'], sounds: ['حا.m4a', 'حو.m4a', 'حي.m4a'], bg: "/bg_mecca.jpg", accent: "text-cyan-600" },
-  'thal': { char: 'ذ', mode: 'whack', shapes: ['ذ', 'ـذ', 'ـذـ'], sounds: ['ذا.m4a', 'ذو.m4a', 'ذي.m4a'], bg: "/bg_desert.jpg", accent: "text-orange-700" },
-  'zay': { char: 'ز', mode: 'whack', shapes: ['ز', 'ـز', 'ـزـ'], sounds: ['زا.m4a', 'زو.m4a', 'زي.m4a'], bg: "/bg_golden.jpg", accent: "text-teal-800" },
-  'sheen': { char: 'ش', mode: 'whack', shapes: ['شـ', 'ـشـ', 'ـش'], sounds: ['شا.m4a', 'شو.m4a', 'شي.m4a'], bg: "/bg_night.jpg", accent: "text-purple-700" },
-  'dad': { char: 'ض', mode: 'whack', shapes: ['ضـ', 'ـضـ', 'ـض'], sounds: ['ضا.m4a', 'ضو.m4a', 'ضي.m4a'], bg: "/bg_mecca.jpg", accent: "text-green-900" },
-  'taa': { char: 'ط', mode: 'whack', shapes: ['طـ', 'ـطـ', 'ـط'], sounds: ['طا.m4a', 'طو.m4a', 'طي.m4a'], bg: "/bg_desert.jpg", accent: "text-orange-900" },
+  // MODE: WHACK (Popping Up) - 7 Letters
+  'ta': { char: 'ت', mode: 'whack', shapes: ['تـ', 'ـتـ', 'ـت'], sounds: ['تا.m4a', 'تو.m4a', 'تي.m4a'], bg: "/bg_8.jpg", accent: "text-red-600" },
+  'haa': { char: 'ح', mode: 'whack', shapes: ['حـ', 'ـحـ', 'ـح'], sounds: ['حا.m4a', 'حو.m4a', 'حي.m4a'], bg: "/bg_9.jpg", accent: "text-cyan-600" },
+  'thal': { char: 'ذ', mode: 'whack', shapes: ['ذ', 'ـذ', 'ـذـ'], sounds: ['ذا.m4a', 'ذو.m4a', 'ذي.m4a'], bg: "/bg_10.jpg", accent: "text-orange-700" },
+  'zay': { char: 'ز', mode: 'whack', shapes: ['ز', 'ـز', 'ـزـ'], sounds: ['زا.m4a', 'زو.m4a', 'زي.m4a'], bg: "/bg_11.jpg", accent: "text-teal-800" },
+  'sheen': { char: 'ش', mode: 'whack', shapes: ['شـ', 'ـشـ', 'ـش'], sounds: ['شا.m4a', 'شو.m4a', 'شي.m4a'], bg: "/bg_12.jpg", accent: "text-purple-700" },
+  'dad': { char: 'ض', mode: 'whack', shapes: ['ضـ', 'ـضـ', 'ـض'], sounds: ['ضا.m4a', 'ضو.m4a', 'ضي.m4a'], bg: "/bg_13.jpg", accent: "text-green-900" },
+  'taa': { char: 'ط', mode: 'whack', shapes: ['طـ', 'ـطـ', 'ـط'], sounds: ['طا.m4a', 'طو.m4a', 'طي.m4a'], bg: "/bg_14.jpg", accent: "text-orange-900" },
 
-  // MODE: RUNNER (Right to Left)
-  'tha': { char: 'ث', mode: 'runner', shapes: ['ثـ', 'ـثـ', 'ـث'], sounds: ['ثا.m4a', 'ثو.m4a', 'ثي.m4a'], bg: "/bg_night.jpg", accent: "text-indigo-600" },
-  'kha': { char: 'خ', mode: 'runner', shapes: ['خـ', 'ـخـ', 'ـخ'], sounds: ['خا.m4a', 'خو.m4a', 'خي.m4a'], bg: "/bg_desert.jpg", accent: "text-slate-800" },
-  'zaa': { char: 'ظ', mode: 'runner', shapes: ['ظـ', 'ـظـ', 'ـظ'], sounds: ['ظا.m4a', 'ظو.m4a', 'ظي.m4a'], bg: "/bg_mecca.jpg", accent: "text-stone-900" },
-  'ayn': { char: 'ع', mode: 'runner', shapes: ['عـ', 'ـعـ', 'ـع'], sounds: ['عا.m4a', 'عو.m4a', 'عي.m4a'], bg: "/bg_golden.jpg", accent: "text-blue-900" },
-  'faa': { char: 'ف', mode: 'runner', shapes: ['فا', 'فو', 'في'], sounds: ['فا.m4a', 'فو.m4a', 'في.m4a'], bg: "/bg_night.jpg", accent: "text-rose-700" },
-  'kaf': { char: 'ك', mode: 'runner', shapes: ['كـ', 'ـكـ', 'ـك'], sounds: ['كا.m4a', 'كو.m4a', 'كي.m4a'], bg: "/bg_mecca.jpg", accent: "text-blue-700" },
-  'sad': { char: 'ص', mode: 'runner', shapes: ['صـ', 'ـصـ', 'ـص'], sounds: ['صا.m4a', 'صو.m4a', 'صي.m4a'], bg: "/bg_desert.jpg", accent: "text-stone-700" },
+  // MODE: RUNNER (Right to Left) - 7 Letters
+  'tha': { char: 'ث', mode: 'runner', shapes: ['ثـ', 'ـثـ', 'ـث'], sounds: ['ثا.m4a', 'ثو.m4a', 'ثي.m4a'], bg: "/bg_15.jpg", accent: "text-indigo-600" },
+  'kha': { char: 'خ', mode: 'runner', shapes: ['خـ', 'ـخـ', 'ـخ'], sounds: ['خا.m4a', 'خو.m4a', 'خي.m4a'], bg: "/bg_16.jpg", accent: "text-slate-800" },
+  'zaa': { char: 'ظ', mode: 'runner', shapes: ['ظـ', 'ـظـ', 'ـظ'], sounds: ['ظا.m4a', 'ظو.m4a', 'ظي.m4a'], bg: "/bg_17.jpg", accent: "text-stone-900" },
+  'ayn': { char: 'ع', mode: 'runner', shapes: ['عـ', 'ـعـ', 'ـع'], sounds: ['عا.m4a', 'عو.m4a', 'عي.m4a'], bg: "/bg_18.jpg", accent: "text-blue-900" },
+  'faa': { char: 'ف', mode: 'runner', shapes: ['فا', 'فو', 'في'], sounds: ['فا.m4a', 'فو.m4a', 'في.m4a'], bg: "/bg_19.jpg", accent: "text-rose-700" },
+  'kaf': { char: 'ك', mode: 'runner', shapes: ['كـ', 'ـكـ', 'ـك'], sounds: ['كا.m4a', 'كو.m4a', 'كي.m4a'], bg: "/bg_20.jpg", accent: "text-blue-700" },
+  'lam': { char: 'ل', mode: 'runner', shapes: ['لـ', 'ـلـ', 'ـل'], sounds: ['لَ.m4a', 'لو.m4a', 'لي.m4a'], bg: "/bg_21.jpg", accent: "text-blue-600" },
 
-  // MODE: LANTERN (Bottom to Top)
-  'ghayn': { char: 'غ', mode: 'lantern', shapes: ['غـ', 'ـغـ', 'ـغ'], sounds: ['غا.m4a', 'غو.m4a', 'غي.m4a'], bg: "/bg_night.jpg", accent: "text-purple-900" },
-  'qaf': { char: 'ق', mode: 'lantern', shapes: ['قـ', 'ـقـ', 'ـق'], sounds: ['ققا.m4a', 'قو.m4a', 'قي.m4a'], bg: "/bg_mecca.jpg", accent: "text-red-900" },
-  'meem': { char: 'م', mode: 'lantern', shapes: ['مـ', 'ـمـ', 'ـم'], sounds: ['ما.m4a', 'مو.m4a', 'مي.m4a'], bg: "/bg_golden.jpg", accent: "text-fuchsia-800" },
-  'noon': { char: 'ن', mode: 'lantern', shapes: ['نـ', 'ـنـ', 'ـن'], sounds: ['نا.m4a', 'نو.m4a', 'ني.m4a'], bg: "/bg_desert.jpg", accent: "text-emerald-800" },
-  'haa2': { char: 'ه', mode: 'lantern', shapes: ['هـ', 'ـهـ', 'ـه'], sounds: ['ها.m4a', 'هو.m4a', 'هي.m4a'], bg: "/bg_night.jpg", accent: "text-yellow-700" },
-  'waw': { char: 'و', mode: 'lantern', shapes: ['و', 'ـو', 'ـوـ'], sounds: ['وا.m4a', 'وو.m4a', 'وي.m4a'], bg: "/bg_mecca.jpg", accent: "text-indigo-800" },
-  'yaa': { char: 'ي', mode: 'lantern', shapes: ['يـ', 'ـيـ', 'ـي'], sounds: ['ي.m4a', 'يو.m4a', 'يي.m4a'], bg: "/bg_desert.jpg", accent: "text-teal-800" },
+  // MODE: LANTERN (Bottom to Top) - 7 Letters
+  'ghayn': { char: 'غ', mode: 'lantern', shapes: ['غـ', 'ـغـ', 'ـغ'], sounds: ['غا.m4a', 'غو.m4a', 'غي.m4a'], bg: "/bg_22.jpg", accent: "text-purple-900" },
+  'qaf': { char: 'ق', mode: 'lantern', shapes: ['قـ', 'ـقـ', 'ـق'], sounds: ['ققا.m4a', 'قو.m4a', 'قي.m4a'], bg: "/bg_23.jpg", accent: "text-red-900" },
+  'meem': { char: 'م', mode: 'lantern', shapes: ['مـ', 'ـمـ', 'ـم'], sounds: ['ما.m4a', 'مو.m4a', 'مي.m4a'], bg: "/bg_24.jpg", accent: "text-fuchsia-800" },
+  'noon': { char: 'ن', mode: 'lantern', shapes: ['نـ', 'ـنـ', 'ـن'], sounds: ['نا.m4a', 'نو.m4a', 'ني.m4a'], bg: "/bg_25.jpg", accent: "text-emerald-800" },
+  'haa2': { char: 'ه', mode: 'lantern', shapes: ['هـ', 'ـهـ', 'ـه'], sounds: ['ها.m4a', 'هو.m4a', 'هي.m4a'], bg: "/bg_26.jpg", accent: "text-yellow-700" },
+  'waw': { char: 'و', mode: 'lantern', shapes: ['و', 'ـو', 'ـوـ'], sounds: ['وا.m4a', 'وو.m4a', 'وي.m4a'], bg: "/bg_27.jpg", accent: "text-indigo-800" },
+  'yaa': { char: 'ي', mode: 'lantern', shapes: ['يـ', 'ـيـ', 'ـي'], sounds: ['ي.m4a', 'يو.m4a', 'يي.m4a'], bg: "/bg_28.jpg", accent: "text-teal-800" },
 };
 
 const App = () => {
@@ -184,7 +186,18 @@ const App = () => {
       if (!exists) return prev;
       setLives((l) => {
         const newLives = l - 1;
-        if (newLives <= 0) setGameState('gameover');
+        if (newLives <= 0) {
+          setGameState('gameover');
+          setScores(prevScores => {
+            const currentBest = prevScores[selectedLetterKey] || 0;
+            if (score > currentBest) {
+              const nextScores = { ...prevScores, [selectedLetterKey]: score };
+              localStorage.setItem('alphabetMasterScores', JSON.stringify(nextScores));
+              return nextScores;
+            }
+            return prevScores;
+          });
+        }
         return newLives;
       });
       return prev.filter((l) => l.id !== id);
@@ -201,7 +214,7 @@ const App = () => {
           @keyframes slideUp { 0% { transform: translateY(40px); opacity: 0; } 20% { transform: translateY(0); opacity: 1; } 80% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
           @keyframes rotateShamsa { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
           @keyframes hitPulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
-          @keyframes whackUp { 0% { transform: translateY(100%); opacity: 0.5; } 15% { transform: translateY(-10%); opacity: 1; } 85% { transform: translateY(-10%); opacity: 1; } 100% { transform: translateY(100%); opacity: 0.5; } }
+          @keyframes whackUp { 0% { transform: translateY(100%); opacity: 0.5; } 15% { transform: translateY(-40%); opacity: 1; } 85% { transform: translateY(-40%); opacity: 1; } 100% { transform: translateY(100%); opacity: 0.5; } }
           @keyframes runLeft { 0% { transform: translateX(100vw); } 100% { transform: translateX(-150px); } }
           @keyframes floatUp { 0% { transform: translateY(100vh) scale(0.8); } 100% { transform: translateY(-150px) scale(1.2); } }
           @keyframes fanousGlow { 0% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.4); } 50% { box-shadow: 0 0 40px rgba(251, 191, 36, 0.7); } 100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.4); } }
@@ -273,11 +286,8 @@ const App = () => {
       {/* GAMEPLAY ENGINE */}
       {gameState === 'playing' && (
         <div className="absolute inset-0">
-          {/* High Quality Letter Background */}
           <div className="absolute inset-0 splash-bg opacity-40 grayscale-[50%]" style={{ backgroundImage: `url(${currentLetter?.bg})` }} />
           <div className="absolute inset-0 bg-black/20" />
-          
-          {/* Giant Background Letter */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] scale-150">
              <span className="text-[80vh] font-black text-white arabic-font">{currentLetter?.char}</span>
           </div>
