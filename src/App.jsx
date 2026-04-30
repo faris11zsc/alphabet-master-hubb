@@ -4,6 +4,7 @@ import { Play, RotateCcw, Heart, Star, Trophy, Zap, ChevronLeft } from 'lucide-r
 // ==========================================
 // ENHANCED ALPHABET CONFIGURATION
 // ==========================================
+// Alphabet Hub Version 2.1 - Fresh Build Trigger
 const LETTER_CONFIG = {
   'hamza': { char: 'أ', shapes: ['أ', 'ـأ', 'إ'], sounds: ['ءا.m4a', 'ءو.m4a', 'ءي.m4a'], bg: "from-sky-700 via-blue-800 to-indigo-950", accent: "text-blue-600" },
   'ba': { char: 'ب', shapes: ['بـ', 'ـبـ', 'ـب'], sounds: ['ب.m4a', 'بو.m4a', 'بي.m4a'], bg: "from-emerald-700 via-green-800 to-teal-950", accent: "text-green-600" },
