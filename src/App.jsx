@@ -4,7 +4,6 @@ import { Play, RotateCcw, Heart, Star, Trophy, Zap, ChevronLeft, Award } from 'l
 // ==========================================
 // 4-MODE ALPHABET CONFIGURATION
 // ==========================================
-// Standard Arabic Sequence
 const ALPHABET_KEYS = [
   'hamza', 'ba', 'ta', 'tha', 'jeem', 'haa', 'kha', 
   'dal', 'thal', 'raa', 'zay', 'seen', 'sheen', 'sad', 
@@ -31,7 +30,7 @@ const LETTER_CONFIG = {
   'taa': { char: 'ط', mode: 'whack', shapes: ['ط', 'طـ', 'ـطـ', 'ـط'], sounds: ['طا.m4a', 'طو.m4a', 'طي.m4a'], bg: "from-amber-800 to-orange-950", accent: "text-amber-600" },
   'zaa': { char: 'ظ', mode: 'runner', shapes: ['ظ', 'ظـ', 'ـظـ', 'ـظ'], sounds: ['ظا.m4a', 'ظو.m4a', 'ظي.m4a'], bg: "from-orange-900 to-black", accent: "text-orange-500" },
   'ayn': { char: 'ع', mode: 'runner', shapes: ['ع', 'عـ', 'ـعـ', 'ـع'], sounds: ['عا.m4a', 'عو.m4a', 'عي.m4a'], bg: "from-sky-900 to-black", accent: "text-sky-500" },
-  'ghayn': { char: 'غ', mode: 'lantern', shapes: ['غ', 'غـ', 'ـغـ', 'ـغ'], sounds: ['غا.m4a', 'غو.m4a', 'غي.m4a'], bg: "from-indigo-900 to-black", accent: "text-indigo-400" },
+  'ghayn': { char: 'غ', mode: 'runner', shapes: ['غ', 'غـ', 'ـغـ', 'ـغ'], sounds: ['غا.m4a', 'غو.m4a', 'غي.m4a'], bg: "from-indigo-900 to-black", accent: "text-indigo-400" },
   'faa': { char: 'ف', mode: 'whack', shapes: ['ف', 'فـ', 'ـفـ', 'ـف'], sounds: ['فا.m4a', 'فو.m4a', 'في.m4a'], bg: "from-pink-900 to-black", accent: "text-pink-500" },
   'qaf': { char: 'ق', mode: 'lantern', shapes: ['ق', 'قـ', 'ـقـ', 'ـق'], sounds: ['ققا.m4a', 'قو.m4a', 'قي.m4a'], bg: "from-red-900 to-black", accent: "text-red-500" },
   'kaf': { char: 'ك', mode: 'runner', shapes: ['ك', 'كـ', 'ـكـ', 'ـك'], sounds: ['كا.m4a', 'كو.m4a', 'كي.m4a'], bg: "from-blue-900 to-black", accent: "text-blue-400" },
@@ -64,7 +63,6 @@ const App = () => {
   const currentLetter = selectedLetterKey ? LETTER_CONFIG[selectedLetterKey] : null;
 
   const masteredCount = Object.keys(LETTER_CONFIG).filter(key => (scores[key] || 0) >= 70).length;
-  const isGrandMaster = masteredCount === 28;
 
   useEffect(() => {
     bgMusicRef.current = new Audio('/audio/abc_song.mp3');
@@ -72,28 +70,32 @@ const App = () => {
     bgMusicRef.current.preload = "auto";
   }, []);
 
-  // INSTANT AUDIO PRELOADER
-  const preloadAudio = useCallback(() => {
+  // TURBO UNLOCKER: Ensures all audio is cached and ready to fire
+  const unlockAllAudio = useCallback(() => {
     ALPHABET_KEYS.forEach(key => {
       const config = LETTER_CONFIG[key];
       config.sounds.forEach(filename => {
         if (!audioRefs.current[filename]) {
           const audio = new Audio(`/audio/${filename}`);
           audio.preload = "auto";
+          // Silent load to wake up browser audio engine
+          audio.volume = 0;
+          audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.volume = 1;
+          }).catch(() => {});
           audioRefs.current[filename] = audio;
         }
       });
     });
   }, []);
 
-  useEffect(() => {
-    if (gameState === 'menu') {
-      bgMusicRef.current?.play().catch(() => {});
-      preloadAudio();
-    } else {
-      bgMusicRef.current?.pause();
-    }
-  }, [gameState, preloadAudio]);
+  const handleEnterHub = () => {
+    setGameState('menu');
+    bgMusicRef.current?.play().catch(() => {});
+    unlockAllAudio(); // Unlock everything on first interaction
+  };
 
   const getLevelData = (s) => {
     if (s < 10) return { level: 1, name: "Beginner", speed: 2.0, spawnRate: 1000, color: "text-sky-300" };
@@ -166,7 +168,7 @@ const App = () => {
   const handleCatch = (id, clientX, clientY) => {
     if (gameState !== 'playing') return;
     
-    // Instant Audio Trigger
+    // Instant Trigger
     const sounds = currentLetter.sounds;
     const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
     const cachedAudio = audioRefs.current[randomSound];
@@ -219,7 +221,7 @@ const App = () => {
           @keyframes slideUp { 0% { transform: translateY(40px); opacity: 0; } 20% { transform: translateY(0); opacity: 1; } 80% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
           @keyframes rotateShamsa { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
           @keyframes hitPulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
-          @keyframes whackUp { 0% { transform: translateY(100%); } 15% { transform: translateY(20%); } 85% { transform: translateY(20%); } 100% { transform: translateY(100%); } }
+          @keyframes whackUp { 0% { transform: translateY(100%); } 15% { transform: translateY(0%); } 85% { transform: translateY(0%); } 100% { transform: translateY(100%); } }
           @keyframes runLeft { 0% { transform: translateX(100vw); } 100% { transform: translateX(-150px); } }
           @keyframes floatUp { 0% { transform: translateY(100vh) scale(0.8); } 100% { transform: translateY(-150px) scale(1.2); } }
           .letter-fall { animation: fall linear forwards; }
@@ -241,18 +243,17 @@ const App = () => {
         `}
       </style>
 
-      {/* SPLASH SCREEN (Large fitting logo) */}
+      {/* SPLASH SCREEN (Logo Removed) */}
       {gameState === 'splash' && (
         <div className="absolute inset-0 z-[500] flex flex-col items-center justify-center bg-[#F5F5DC] overflow-hidden p-6">
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.05] pointer-events-none scale-[2]">
              <div className="relative w-96 h-96 shamsa-medallion rounded-full animate-[rotateShamsa_120s_linear_infinite]" />
           </div>
-          <img src="/logo.png" className="w-full max-w-3xl h-auto mb-16 contrast-125 z-10" />
-          <button onClick={() => { setGameState('menu'); bgMusicRef.current?.play().catch(() => {}); }} className="group relative px-24 py-12 bg-[#800000] text-[#D4AF37] text-6xl font-black rounded-[3.5rem] shadow-2xl border-4 border-[#D4AF37] z-[510] tracking-widest italic uppercase active:scale-95 transition-transform">ENTER HUB</button>
+          <button onClick={handleEnterHub} className="group relative px-24 py-12 bg-[#800000] text-[#D4AF37] text-6xl font-black rounded-[3.5rem] shadow-2xl border-4 border-[#D4AF37] z-[510] tracking-widest italic uppercase active:scale-95 transition-transform">ENTER HUB</button>
         </div>
       )}
 
-      {/* DASHBOARD (Alphabetical Order) */}
+      {/* DASHBOARD (Alphabetical) */}
       {gameState === 'menu' && (
         <div className="absolute inset-0 z-[100] flex flex-col items-center justify-start p-8 bg-[#F5F5DC] overflow-y-auto scroll-smooth pb-32">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none scale-150">
@@ -265,7 +266,6 @@ const App = () => {
           </div>
 
           <div className="text-center mb-16 relative z-10">
-            {isGrandMaster && <div className="text-yellow-500 animate-bounce flex justify-center mb-2"><Award size={48} /></div>}
             <h1 className="text-7xl font-black text-[#800000] drop-shadow-sm mb-4 tracking-tighter arabic-font">Alphabet Master</h1>
             <div className="h-1 w-48 bg-[#D4AF37] mx-auto rounded-full" />
           </div>
@@ -315,10 +315,10 @@ const App = () => {
             </div>
           )}
 
-          {/* ENGINE: SAND WHACK (Precision Pop-up) */}
+          {/* ENGINE: SAND WHACK (Natural Hole Pop-up) */}
           {currentLetter.mode === 'whack' && (
             <div className="absolute inset-0 flex items-center justify-center p-4">
-              <div className="grid grid-cols-3 grid-rows-3 gap-10 w-full max-w-lg aspect-square">
+              <div className="grid grid-cols-3 grid-rows-3 gap-12 w-full max-w-lg aspect-square">
                 {[...Array(9)].map((_, i) => {
                   const el = elements.find(e => e.holeIndex === i);
                   return (
@@ -327,9 +327,9 @@ const App = () => {
                         <button
                           onPointerDown={(e) => handleCatch(el.id, e.clientX, e.clientY)}
                           style={{ animationDuration: `${currentLevel.speed * 0.9}s` }}
-                          className="letter-whack relative w-full h-[120%] bg-white rounded-t-[2.5rem] shadow-2xl flex items-center justify-center ultra-sensitive-hitbox outline-none touch-none active:scale-95"
+                          className="letter-whack relative w-full h-full bg-white rounded-t-[2rem] shadow-2xl flex items-center justify-center ultra-sensitive-hitbox outline-none touch-none active:scale-95"
                         >
-                          <span className={`text-6xl font-bold ${currentLetter.accent} arabic-font pb-10`}>{el.shape}</span>
+                          <span className={`text-6xl font-bold ${currentLetter.accent} arabic-font`}>{el.shape}</span>
                         </button>
                       )}
                     </div>
