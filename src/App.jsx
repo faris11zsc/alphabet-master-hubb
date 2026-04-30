@@ -37,7 +37,7 @@ const LETTER_CONFIG = {
   'lam': { char: 'ل', mode: 'runner', shapes: ['ل', 'لـ', 'ـلـ', 'ـل'], sounds: ['لَ.m4a', 'لو.m4a', 'لي.m4a'], bg: "from-cyan-900 to-black", accent: "text-cyan-500" },
   'meem': { char: 'م', mode: 'lantern', shapes: ['م', 'مـ', 'ـمـ', 'ـم'], sounds: ['ما.m4a', 'مو.m4a', 'مي.m4a'], bg: "from-violet-900 to-black", accent: "text-fuchsia-500" },
   'noon': { char: 'ن', mode: 'lantern', shapes: ['ن', 'نـ', 'ـنـ', 'ـن'], sounds: ['نا.m4a', 'نو.m4a', 'ني.m4a'], bg: "from-green-900 to-black", accent: "text-green-500" },
-  'haa2': { char: 'ه', mode: 'lantern', shapes: ['ه', 'هـ', 'ـهـ', 'ـه'], sounds: ['ها.m4a', 'هو.m4a', 'هي.m4a'], bg: "from-orange-800 to-black", accent: "text-yellow-500" },
+  'haa2': { char: 'ه', mode: 'lantern', shapes: ['ه', 'هـ', 'ـهـ', 'ه'], sounds: ['ها.m4a', 'هو.m4a', 'هي.m4a'], bg: "from-orange-800 to-black", accent: "text-yellow-500" },
   'waw': { char: 'و', mode: 'lantern', shapes: ['و', 'ـو', 'ـوـ'], sounds: ['وا.m4a', 'وو.m4a', 'وي.m4a'], bg: "from-blue-900 to-black", accent: "text-indigo-500" },
   'yaa': { char: 'ي', mode: 'lantern', shapes: ['ي', 'يـ', 'ـيـ', 'ـي'], sounds: ['ي.m4a', 'يو.m4a', 'يي.m4a'], bg: "from-teal-900 to-black", accent: "text-teal-400" },
 };
@@ -70,7 +70,7 @@ const App = () => {
     bgMusicRef.current.preload = "auto";
   }, []);
 
-  // TURBO UNLOCKER: Silent fire to wake up browser audio engine
+  // GLOBAL AUDIO UNLOCKER
   const unlockAllAudio = useCallback(() => {
     ALPHABET_KEYS.forEach(key => {
       const config = LETTER_CONFIG[key];
@@ -90,7 +90,7 @@ const App = () => {
     });
   }, []);
 
-  // DASHBOARD MUSIC LOGIC: Stop if NOT in menu
+  // Music stopping logic: Only play in 'menu' state
   useEffect(() => {
     if (gameState === 'menu') {
       bgMusicRef.current?.play().catch(() => {});
@@ -172,7 +172,7 @@ const App = () => {
   const handleCatch = (id, clientX, clientY) => {
     if (gameState !== 'playing') return;
     
-    // Instant Trigger from Cache
+    // Instant Audio from Cache
     const sounds = currentLetter.sounds;
     const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
     const cachedAudio = audioRefs.current[randomSound];
@@ -225,7 +225,7 @@ const App = () => {
           @keyframes slideUp { 0% { transform: translateY(40px); opacity: 0; } 20% { transform: translateY(0); opacity: 1; } 80% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
           @keyframes rotateShamsa { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
           @keyframes hitPulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
-          @keyframes whackUp { 0% { transform: translateY(100%); } 15% { transform: translateY(-25%); } 85% { transform: translateY(-25%); } 100% { transform: translateY(100%); } }
+          @keyframes whackUp { 0% { transform: translateY(100%); } 15% { transform: translateY(0%); } 85% { transform: translateY(0%); } 100% { transform: translateY(100%); } }
           @keyframes runLeft { 0% { transform: translateX(100vw); } 100% { transform: translateX(-150px); } }
           @keyframes floatUp { 0% { transform: translateY(100vh) scale(0.8); } 100% { transform: translateY(-150px) scale(1.2); } }
           .letter-fall { animation: fall linear forwards; }
@@ -240,14 +240,14 @@ const App = () => {
             border: 4px solid #D4AF37;
             box-shadow: 0 0 50px rgba(212, 175, 55, 0.4);
           }
-          .ultra-sensitive-hitbox { padding: 4rem; margin: -4rem; }
+          .ultra-sensitive-hitbox { padding: 5rem; margin: -5rem; }
           .dune-hole { background: radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, transparent 70%); }
           .fanous-shape { clip-path: polygon(50% 0%, 100% 20%, 100% 80%, 50% 100%, 0% 80%, 0% 20%); }
           .scroll-shape { border-radius: 40px 10px 40px 10px; border-left: 10px solid #D4AF37; border-right: 10px solid #D4AF37; }
         `}
       </style>
 
-      {/* SPLASH SCREEN (Clean portal) */}
+      {/* SPLASH SCREEN (Logo Removed) */}
       {gameState === 'splash' && (
         <div className="absolute inset-0 z-[500] flex flex-col items-center justify-center bg-[#F5F5DC] overflow-hidden p-6">
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.05] pointer-events-none scale-[2]">
@@ -310,19 +310,19 @@ const App = () => {
             </div>
           </div>
 
-          {/* ENGINE: SAND WHACK (Exaggerated & Fully Visible) */}
+          {/* ENGINE: SAND WHACK (Exaggerated for Visibility) */}
           {currentLetter.mode === 'whack' && (
             <div className="absolute inset-0 flex items-center justify-center p-4">
-              <div className="grid grid-cols-3 grid-rows-3 gap-10 w-full max-w-lg aspect-square overflow-visible">
+              <div className="grid grid-cols-3 grid-rows-3 gap-10 w-full max-w-lg aspect-square">
                 {[...Array(9)].map((_, i) => {
                   const el = elements.find(e => e.holeIndex === i);
                   return (
-                    <div key={i} className="relative w-full h-full dune-hole rounded-full flex items-end justify-center border-b-4 border-white/20 overflow-visible">
+                    <div key={i} className="relative w-full h-full dune-hole rounded-full flex items-end justify-center border-b-4 border-white/20 overflow-hidden">
                       {el && (
                         <button
                           onPointerDown={(e) => handleCatch(el.id, e.clientX, e.clientY)}
                           style={{ animationDuration: `${currentLevel.speed * 0.9}s` }}
-                          className="letter-whack relative w-full h-full bg-white rounded-t-[2rem] shadow-2xl flex items-center justify-center ultra-sensitive-hitbox outline-none touch-none active:scale-95"
+                          className="letter-whack relative w-full h-full bg-white rounded-t-[2.5rem] shadow-2xl flex items-center justify-center ultra-sensitive-hitbox outline-none touch-none active:scale-95"
                         >
                           <span className={`text-8xl font-black ${currentLetter.accent} arabic-font`}>{el.shape}</span>
                         </button>
@@ -397,7 +397,7 @@ const App = () => {
         </div>
       )}
 
-      {/* BRANDING LOGO (Ghost Watermark) */}
+      {/* BRANDING LOGO (Watermark) */}
       <div className={`absolute bottom-8 left-8 z-[1000] transition-all duration-500 ${gameState === 'playing' ? 'opacity-[0.01] pointer-events-none' : 'opacity-[0.05]'}`}>
         <a href="https://api.whatsapp.com/send/?phone=201554712241&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
           <img src="/logo.png" className="w-24 h-auto mb-2 contrast-125 hover:scale-105 transition-transform" />
