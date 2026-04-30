@@ -59,47 +59,55 @@ const App = () => {
   });
 
   const audioRefs = useRef({});
-  const bgMusicRef = useRef(null);
-  const currentLetter = selectedLetterKey ? LETTER_CONFIG[selectedLetterKey] : null;
-
-  const masteredCount = Object.keys(LETTER_CONFIG).filter(key => (scores[key] || 0) >= 70).length;
+  // Synchronously create the background music so it's ready on first click
+  const bgMusicRef = useRef(new Audio('/audio/abc_song.mp3'));
 
   useEffect(() => {
-    bgMusicRef.current = new Audio('/audio/abc_song.mp3');
+    // Configure once
     bgMusicRef.current.loop = true;
     bgMusicRef.current.preload = "auto";
   }, []);
 
-  // GLOBAL AUDIO UNLOCKER
-  const unlockAllAudio = useCallback(() => {
-    ALPHABET_KEYS.forEach(key => {
+  const currentLetter = selectedLetterKey ? LETTER_CONFIG[selectedLetterKey] : null;
+  const masteredCount = Object.keys(LETTER_CONFIG).filter(key => (scores[key] || 0) >= 70).length;
+
+  // ---------------------------------------------------------------
+  // STAGGERED AUDIO PRELOAD (no lag, run during splash)
+  // ---------------------------------------------------------------
+  const preloadAllSounds = useCallback(async () => {
+    for (const key of ALPHABET_KEYS) {
       const config = LETTER_CONFIG[key];
-      config.sounds.forEach(filename => {
-        if (!audioRefs.current[filename]) {
-          const audio = new Audio(`/audio/${filename}`);
-          audio.preload = "auto";
-          audio.volume = 0;
-          audio.play().then(() => {
-            audio.pause();
-            audio.currentTime = 0;
-            audio.volume = 1;
-          }).catch(() => {});
-          audioRefs.current[filename] = audio;
-        }
-      });
-    });
+      for (const filename of config.sounds) {
+        if (audioRefs.current[filename]) continue;
+        const audio = new Audio(`/audio/${filename}`);
+        audio.preload = "auto";
+        // Load without playing to avoid decoder spike
+        try {
+          await audio.load();
+        } catch (e) {}
+        audioRefs.current[filename] = audio;
+        // Tiny delay between files to keep UI smooth
+        await new Promise(r => setTimeout(r, 10));
+      }
+    }
   }, []);
 
-  // Music stopping logic: Only play in 'menu' state
+  useEffect(() => {
+    if (gameState === 'splash') {
+      preloadAllSounds();
+    }
+  }, [gameState, preloadAllSounds]);
+
+  // Music stopping logic: play only in menu, pause otherwise (and resume from pause)
   useEffect(() => {
     if (gameState === 'menu') {
       bgMusicRef.current?.play().catch(() => {});
-      unlockAllAudio();
+      // No longer call unlockAllAudio here – it's done in splash
     } else {
       bgMusicRef.current?.pause();
-      if (bgMusicRef.current) bgMusicRef.current.currentTime = 0;
+      // Removed currentTime = 0 so it resumes where it left off
     }
-  }, [gameState, unlockAllAudio]);
+  }, [gameState]);
 
   const getLevelData = (s) => {
     if (s < 10) return { level: 1, name: "Beginner", speed: 2.0, spawnRate: 1000, color: "text-sky-300" };
@@ -136,10 +144,18 @@ const App = () => {
     setSelectedLetterKey(null);
   };
 
+  // ---------------------------------------------------------------
+  // SPAWNING ENGINE (optimised with element cap to prevent lag)
+  // ---------------------------------------------------------------
   useEffect(() => {
     if (gameState !== 'playing' || !currentLetter) return;
+
+    const MAX_ELEMENTS = 20; // hard limit on simultaneous items
+
     const spawnInterval = setInterval(() => {
       setElements((prev) => {
+        if (prev.length >= MAX_ELEMENTS) return prev; // skip if too many
+
         const id = Date.now() + Math.random();
         const shape = currentLetter.shapes[Math.floor(Math.random() * currentLetter.shapes.length)];
         if (currentLetter.mode === 'whack') {
@@ -155,6 +171,7 @@ const App = () => {
         }
       });
 
+      // Whack miss timeout logic unchanged
       if (currentLetter.mode === 'whack') {
         const idToClear = Date.now();
         setTimeout(() => {
@@ -166,6 +183,7 @@ const App = () => {
         }, currentLevel.speed * 1200);
       }
     }, currentLevel.spawnRate);
+
     return () => clearInterval(spawnInterval);
   }, [gameState, score, selectedLetterKey, currentLevel.spawnRate, currentLevel.speed]);
 
@@ -241,37 +259,56 @@ const App = () => {
             box-shadow: 0 0 50px rgba(212, 175, 55, 0.4);
           }
           .ultra-sensitive-hitbox { padding: 5rem; margin: -5rem; }
+          /* Removed overflow-hidden to avoid clipping letters in whack mode */
           .dune-hole { background: radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, transparent 70%); }
           .fanous-shape { clip-path: polygon(50% 0%, 100% 20%, 100% 80%, 50% 100%, 0% 80%, 0% 20%); }
           .scroll-shape { border-radius: 40px 10px 40px 10px; border-left: 10px solid #D4AF37; border-right: 10px solid #D4AF37; }
+          /* Subtle Islamic pattern overlay */
+          .arabesque-bg {
+            background-color: #F5F5DC;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23D4AF37' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+          }
+          .gold-border { border: 1px solid #D4AF37; }
+          .decorative-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+          }
         `}
       </style>
 
-      {/* SPLASH SCREEN (Logo Removed) */}
+      {/* SPLASH SCREEN (Logo Removed, instant music on button) */}
       {gameState === 'splash' && (
-        <div className="absolute inset-0 z-[500] flex flex-col items-center justify-center bg-[#F5F5DC] overflow-hidden p-6">
+        <div className="absolute inset-0 z-[500] flex flex-col items-center justify-center arabesque-bg p-6">
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.05] pointer-events-none scale-[2]">
              <div className="relative w-96 h-96 shamsa-medallion rounded-full animate-[rotateShamsa_120s_linear_infinite]" />
           </div>
-          <button onClick={() => { setGameState('menu'); }} className="group relative px-24 py-12 bg-[#800000] text-[#D4AF37] text-6xl font-black rounded-[3.5rem] shadow-2xl border-4 border-[#D4AF37] z-[510] tracking-widest italic uppercase active:scale-95 transition-transform">ENTER HUB</button>
+          <button onClick={() => { 
+            // Play instantly on user gesture
+            bgMusicRef.current.play().catch(() => {});
+            setGameState('menu'); 
+          }} className="group relative px-24 py-12 bg-[#800000] text-[#D4AF37] text-6xl font-black rounded-[3.5rem] shadow-2xl gold-border z-[510] tracking-widest italic uppercase active:scale-95 transition-transform"
+          >
+            ENTER HUB
+          </button>
         </div>
       )}
 
-      {/* DASHBOARD (Alphabetical) */}
+      {/* DASHBOARD (Arabic bazaar style) */}
       {gameState === 'menu' && (
-        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-start p-8 bg-[#F5F5DC] overflow-y-auto scroll-smooth pb-32">
+        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-start p-8 arabesque-bg overflow-y-auto scroll-smooth pb-32">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none scale-150">
              <div className="relative w-96 h-96 shamsa-medallion rounded-full animate-[rotateShamsa_120s_linear_infinite]" />
           </div>
 
-          <div className="w-full max-w-md bg-stone-200 h-2 rounded-full mb-8 relative z-20 overflow-hidden shadow-inner flex items-center">
+          <div className="w-full max-w-md bg-stone-200 h-2 rounded-full mb-8 relative z-20 overflow-hidden shadow-inner flex items-center gold-border">
             <div className="h-full bg-gradient-to-r from-[#008080] to-[#40E0D0] transition-all duration-1000" style={{ width: `${(masteredCount / 28) * 100}%` }} />
             <div className="absolute right-2 text-[8px] font-black text-stone-600 uppercase tracking-tighter">{masteredCount} / 28 Mastered</div>
           </div>
 
           <div className="text-center mb-16 relative z-10">
             <h1 className="text-7xl font-black text-[#800000] drop-shadow-sm mb-4 tracking-tighter arabic-font">Alphabet Master</h1>
-            <div className="h-1 w-48 bg-[#D4AF37] mx-auto rounded-full" />
+            <div className="decorative-line w-48 mx-auto mb-2" />
+            <div className="decorative-line w-32 mx-auto opacity-50" />
           </div>
 
           <div className="grid grid-cols-4 md:grid-cols-7 gap-6 w-full max-w-5xl relative z-10">
@@ -279,7 +316,7 @@ const App = () => {
               const letterScore = scores[key] || 0;
               const isMastered = letterScore >= 70;
               return (
-                <button key={key} onClick={() => startGame(key)} className="aspect-square bg-[#008080]/10 hover:bg-[#008080]/20 border border-[#D4AF37]/30 rounded-3xl flex flex-col items-center justify-center transition-all transform hover:scale-105 active:scale-90 group shadow-lg relative overflow-hidden">
+                <button key={key} onClick={() => startGame(key)} className="aspect-square bg-[#008080]/10 hover:bg-[#008080]/20 gold-border rounded-3xl flex flex-col items-center justify-center transition-all transform hover:scale-105 active:scale-90 group shadow-lg relative overflow-hidden">
                   {isMastered && <div className="absolute top-1 right-1 text-yellow-500 animate-bounce"><Star size={14} fill="currentColor" /></div>}
                   <span className="text-5xl font-bold text-[#800000] group-hover:text-[#40E0D0] transition-colors arabic-font drop-shadow-sm uppercase">{LETTER_CONFIG[key].char}</span>
                   <span className="text-[9px] text-stone-500 uppercase mt-2 font-black tracking-widest">{key}</span>
@@ -294,12 +331,12 @@ const App = () => {
       {/* GAMEPLAY ENGINE */}
       {gameState === 'playing' && (
         <div className={`absolute inset-0 bg-gradient-to-br ${currentLetter?.bg}`}>
-          <button onClick={backToMenu} className="absolute top-8 left-8 z-[110] bg-white/10 p-4 rounded-3xl text-white backdrop-blur-lg border border-white/20">
+          <button onClick={backToMenu} className="absolute top-8 left-8 z-[110] bg-white/10 p-4 rounded-3xl text-white backdrop-blur-lg gold-border">
             <ChevronLeft size={28} />
           </button>
           
           <div className="absolute top-8 right-8 flex flex-col items-end gap-3 z-50 pointer-events-none">
-            <div className="bg-white/95 px-6 py-3 rounded-full shadow-2xl flex items-center gap-3">
+            <div className="bg-white/95 px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 gold-border">
               <Star className="text-amber-500 fill-amber-500 w-8 h-8" />
               <span className="text-3xl font-black text-slate-800 tracking-tighter">{score}</span>
             </div>
@@ -310,21 +347,21 @@ const App = () => {
             </div>
           </div>
 
-          {/* ENGINE: SAND WHACK (Exaggerated for Visibility) */}
+          {/* ENGINE: SAND WHACK (Full letter visible, overflow removed) */}
           {currentLetter.mode === 'whack' && (
             <div className="absolute inset-0 flex items-center justify-center p-4">
               <div className="grid grid-cols-3 grid-rows-3 gap-10 w-full max-w-lg aspect-square">
                 {[...Array(9)].map((_, i) => {
                   const el = elements.find(e => e.holeIndex === i);
                   return (
-                    <div key={i} className="relative w-full h-full dune-hole rounded-full flex items-end justify-center border-b-4 border-white/20 overflow-hidden">
+                    <div key={i} className="relative w-full h-full dune-hole rounded-full flex items-end justify-center border-b-4 border-white/20">
                       {el && (
                         <button
                           onPointerDown={(e) => handleCatch(el.id, e.clientX, e.clientY)}
                           style={{ animationDuration: `${currentLevel.speed * 0.9}s` }}
                           className="letter-whack relative w-full h-full bg-white rounded-t-[2.5rem] shadow-2xl flex items-center justify-center ultra-sensitive-hitbox outline-none touch-none active:scale-95"
                         >
-                          <span className={`text-8xl font-black ${currentLetter.accent} arabic-font`}>{el.shape}</span>
+                          <span className={`text-7xl font-black ${currentLetter.accent} arabic-font`}>{el.shape}</span>
                         </button>
                       )}
                     </div>
