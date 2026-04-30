@@ -4,7 +4,6 @@ import { Play, RotateCcw, Heart, Star, Trophy, Zap, ChevronLeft, Award } from 'l
 // ==========================================
 // 4-MODE ALPHABET CONFIGURATION
 // ==========================================
-// Order: Standard Arabic Alphabet (أ ب ت ث ج ...)
 const ALPHABET_KEYS = [
   'hamza', 'ba', 'ta', 'tha', 'jeem', 'haa', 'kha', 
   'dal', 'thal', 'raa', 'zay', 'seen', 'sheen', 'sad', 
@@ -13,36 +12,29 @@ const ALPHABET_KEYS = [
 ];
 
 const LETTER_CONFIG = {
-  // Mode 1: RAIN
   'hamza': { char: 'أ', mode: 'rain', shapes: ['ء', 'ئ', 'ئـ', 'ؤ', 'أ', 'إ'], sounds: ['ءا.m4a', 'ءو.m4a', 'ءي.m4a'], bg: "from-sky-800 to-indigo-950", accent: "text-blue-500" },
   'ba': { char: 'ب', mode: 'rain', shapes: ['ب', 'بـ', 'ـبـ', 'ـب'], sounds: ['ب.m4a', 'بو.m4a', 'بي.m4a'], bg: "from-emerald-800 to-teal-950", accent: "text-green-500" },
-  'jeem': { char: 'ج', mode: 'rain', shapes: ['ج', 'جـ', 'ـجـ', 'ـج'], sounds: ['جا.m4a', 'جو.m4a', 'جي.m4a'], bg: "from-orange-800 to-amber-950", accent: "text-orange-500" },
-  'dal': { char: 'د', mode: 'rain', shapes: ['د', 'ـد', 'ـدـ'], sounds: ['دا.m4a', 'دو.m4a', 'دي.m4a'], bg: "from-red-800 to-rose-950", accent: "text-rose-500" },
-  'raa': { char: 'ر', mode: 'rain', shapes: ['ر', 'ـر', 'ـرـ'], sounds: ['را.m4a', 'رو.m4a', 'ري.m4a'], bg: "from-lime-800 to-green-950", accent: "text-lime-500" },
-  'seen': { char: 'س', mode: 'rain', shapes: ['س', 'سـ', 'ـسـ', 'ـس'], sounds: ['س.m4a', 'سو.m4a', 'سي.m4a'], bg: "from-blue-800 to-violet-950", accent: "text-blue-400" },
-  'sad': { char: 'ص', mode: 'rain', shapes: ['ص', 'صـ', 'ـصـ', 'ـص'], sounds: ['صا.m4a', 'صو.m4a', 'صي.m4a'], bg: "from-stone-800 to-black", accent: "text-stone-400" },
-
-  // Mode 2: WHACK
   'ta': { char: 'ت', mode: 'whack', shapes: ['ت', 'تـ', 'ـتـ', 'ـت'], sounds: ['تا.m4a', 'تو.m4a', 'تي.m4a'], bg: "from-rose-800 to-red-950", accent: "text-red-500" },
+  'tha': { char: 'ث', mode: 'runner', shapes: ['ث', 'ثـ', 'ـثـ', 'ـث'], sounds: ['ثا.m4a', 'ثو.m4a', 'ثي.m4a'], bg: "from-purple-800 to-indigo-950", accent: "text-purple-400" },
+  'jeem': { char: 'ج', mode: 'rain', shapes: ['ج', 'جـ', 'ـجـ', 'ـج'], sounds: ['جا.m4a', 'جو.m4a', 'جي.m4a'], bg: "from-orange-800 to-amber-950", accent: "text-orange-500" },
   'haa': { char: 'ح', mode: 'whack', shapes: ['ح', 'حـ', 'ـحـ', 'ـح'], sounds: ['حا.m4a', 'حو.m4a', 'حي.m4a'], bg: "from-teal-800 to-cyan-950", accent: "text-cyan-500" },
+  'kha': { char: 'خ', mode: 'runner', shapes: ['خ', 'خـ', 'ـخـ', 'ـخ'], sounds: ['خا.m4a', 'خو.m4a', 'خي.m4a'], bg: "from-slate-800 to-black", accent: "text-slate-400" },
+  'dal': { char: 'د', mode: 'rain', shapes: ['د', 'ـد', 'ـدـ'], sounds: ['دا.m4a', 'دو.m4a', 'دي.m4a'], bg: "from-red-800 to-rose-950", accent: "text-rose-500" },
   'thal': { char: 'ذ', mode: 'whack', shapes: ['ذ', 'ـذ', 'ـذـ'], sounds: ['ذا.m4a', 'ذو.m4a', 'ذي.m4a'], bg: "from-yellow-700 to-orange-950", accent: "text-yellow-500" },
+  'raa': { char: 'ر', mode: 'rain', shapes: ['ر', 'ـر', 'ـرـ'], sounds: ['را.m4a', 'رو.m4a', 'ري.m4a'], bg: "from-lime-800 to-green-950", accent: "text-lime-500" },
   'zay': { char: 'ز', mode: 'whack', shapes: ['ز', 'ـز', 'ـزـ'], sounds: ['زا.m4a', 'زو.m4a', 'زي.m4a'], bg: "from-green-800 to-emerald-950", accent: "text-emerald-500" },
+  'seen': { char: 'س', mode: 'rain', shapes: ['س', 'سـ', 'ـسـ', 'ـس'], sounds: ['س.m4a', 'سو.m4a', 'سي.m4a'], bg: "from-blue-800 to-violet-950", accent: "text-blue-400" },
   'sheen': { char: 'ش', mode: 'whack', shapes: ['ش', 'شـ', 'ـشـ', 'ـش'], sounds: ['شا.m4a', 'شو.m4a', 'شي.m4a'], bg: "from-violet-800 to-fuchsia-950", accent: "text-violet-400" },
+  'sad': { char: 'ص', mode: 'rain', shapes: ['ص', 'صـ', 'ـصـ', 'ـص'], sounds: ['صا.m4a', 'صو.m4a', 'صي.m4a'], bg: "from-stone-800 to-black", accent: "text-stone-400" },
   'dad': { char: 'ض', mode: 'whack', shapes: ['ض', 'ضـ', 'ـضـ', 'ـض'], sounds: ['ضا.m4a', 'ضو.m4a', 'ضي.m4a'], bg: "from-emerald-900 to-black", accent: "text-emerald-600" },
   'taa': { char: 'ط', mode: 'whack', shapes: ['ط', 'طـ', 'ـطـ', 'ـط'], sounds: ['طا.m4a', 'طو.m4a', 'طي.m4a'], bg: "from-amber-800 to-orange-950", accent: "text-amber-600" },
-
-  // Mode 3: RUNNER
-  'tha': { char: 'ث', mode: 'runner', shapes: ['ث', 'ثـ', 'ـثـ', 'ـث'], sounds: ['ثا.m4a', 'ثو.m4a', 'ثي.m4a'], bg: "from-purple-800 to-indigo-950", accent: "text-purple-400" },
-  'kha': { char: 'خ', mode: 'runner', shapes: ['خ', 'خـ', 'ـخـ', 'ـخ'], sounds: ['خا.m4a', 'خو.m4a', 'خي.m4a'], bg: "from-slate-800 to-black", accent: "text-slate-400" },
   'zaa': { char: 'ظ', mode: 'runner', shapes: ['ظ', 'ظـ', 'ـظـ', 'ـظ'], sounds: ['ظا.m4a', 'ظو.m4a', 'ظي.m4a'], bg: "from-orange-900 to-black", accent: "text-orange-500" },
   'ayn': { char: 'ع', mode: 'runner', shapes: ['ع', 'عـ', 'ـعـ', 'ـع'], sounds: ['عا.m4a', 'عو.m4a', 'عي.m4a'], bg: "from-sky-900 to-black", accent: "text-sky-500" },
-  'ghayn': { char: 'غ', mode: 'runner', shapes: ['غ', 'غـ', 'ـغـ', 'ـغ'], sounds: ['غا.m4a', 'غو.m4a', 'غي.m4a'], bg: "from-indigo-900 to-black", accent: "text-indigo-400" },
+  'ghayn': { char: 'غ', mode: 'lantern', shapes: ['غ', 'غـ', 'ـغـ', 'ـغ'], sounds: ['غا.m4a', 'غو.m4a', 'غي.m4a'], bg: "from-indigo-900 to-black", accent: "text-indigo-400" },
   'faa': { char: 'ف', mode: 'runner', shapes: ['ف', 'فـ', 'ـفـ', 'ـف'], sounds: ['فا.m4a', 'فو.m4a', 'في.m4a'], bg: "from-pink-900 to-black", accent: "text-pink-500" },
-  'qaf': { char: 'ق', mode: 'runner', shapes: ['ق', 'قـ', 'ـقـ', 'ـق'], sounds: ['ققا.m4a', 'قو.m4a', 'قي.m4a'], bg: "from-red-900 to-black", accent: "text-red-500" },
-
-  // Mode 4: LANTERN
-  'kaf': { char: 'ك', mode: 'lantern', shapes: ['ك', 'كـ', 'ـكـ', 'ـك'], sounds: ['كا.m4a', 'كو.m4a', 'كي.m4a'], bg: "from-blue-900 to-black", accent: "text-blue-400" },
-  'lam': { char: 'ل', mode: 'lantern', shapes: ['ل', 'لـ', 'ـلـ', 'ـل'], sounds: ['لَ.m4a', 'لو.m4a', 'لي.m4a'], bg: "from-cyan-900 to-black", accent: "text-cyan-500" },
+  'qaf': { char: 'ق', mode: 'lantern', shapes: ['ق', 'قـ', 'ـقـ', 'ـق'], sounds: ['ققا.m4a', 'قو.m4a', 'قي.m4a'], bg: "from-red-900 to-black", accent: "text-red-500" },
+  'kaf': { char: 'ك', mode: 'runner', shapes: ['ك', 'كـ', 'ـكـ', 'ـك'], sounds: ['كا.m4a', 'كو.m4a', 'كي.m4a'], bg: "from-blue-900 to-black", accent: "text-blue-400" },
+  'lam': { char: 'ل', mode: 'runner', shapes: ['ل', 'لـ', 'ـلـ', 'ـل'], sounds: ['لَ.m4a', 'لو.m4a', 'لي.m4a'], bg: "from-cyan-900 to-black", accent: "text-cyan-500" },
   'meem': { char: 'م', mode: 'lantern', shapes: ['م', 'مـ', 'ـمـ', 'ـم'], sounds: ['ما.m4a', 'مو.m4a', 'مي.m4a'], bg: "from-violet-900 to-black", accent: "text-fuchsia-500" },
   'noon': { char: 'ن', mode: 'lantern', shapes: ['ن', 'نـ', 'ـنـ', 'ـن'], sounds: ['نا.m4a', 'نو.m4a', 'ني.m4a'], bg: "from-green-900 to-black", accent: "text-green-500" },
   'haa2': { char: 'ه', mode: 'lantern', shapes: ['ه', 'هـ', 'ـهـ', 'ـه'], sounds: ['ها.m4a', 'هو.m4a', 'هي.m4a'], bg: "from-orange-800 to-black", accent: "text-yellow-500" },
@@ -66,27 +58,42 @@ const App = () => {
     } catch (e) { return {}; }
   });
 
-  const audioRefs = useRef([]);
+  const audioRefs = useRef({});
   const bgMusicRef = useRef(null);
   const currentLetter = selectedLetterKey ? LETTER_CONFIG[selectedLetterKey] : null;
 
   const masteredCount = Object.keys(LETTER_CONFIG).filter(key => (scores[key] || 0) >= 70).length;
   const isGrandMaster = masteredCount === 28;
 
+  // Initialize Background Music and Audio Cache
   useEffect(() => {
     bgMusicRef.current = new Audio('/audio/abc_song.mp3');
     bgMusicRef.current.loop = true;
     bgMusicRef.current.preload = "auto";
-    return () => bgMusicRef.current?.pause();
+  }, []);
+
+  // TURBO PRELOADER: Preloads letter sounds in background
+  const preloadAudio = useCallback(() => {
+    ALPHABET_KEYS.forEach(key => {
+      const config = LETTER_CONFIG[key];
+      config.sounds.forEach(filename => {
+        if (!audioRefs.current[filename]) {
+          const audio = new Audio(`/audio/${filename}`);
+          audio.preload = "auto";
+          audioRefs.current[filename] = audio;
+        }
+      });
+    });
   }, []);
 
   useEffect(() => {
     if (gameState === 'menu') {
       bgMusicRef.current?.play().catch(() => {});
+      preloadAudio(); // Start preloading when in menu
     } else {
       bgMusicRef.current?.pause();
     }
-  }, [gameState]);
+  }, [gameState, preloadAudio]);
 
   const getLevelData = (s) => {
     if (s < 10) return { level: 1, name: "Beginner", speed: 2.0, spawnRate: 1000, color: "text-sky-300" };
@@ -116,13 +123,6 @@ const App = () => {
     setElements([]);
     setFloatingTexts([]);
     setGameState('playing');
-    
-    const config = LETTER_CONFIG[letterKey];
-    audioRefs.current = config.sounds.map(filename => {
-      const audio = new Audio(`/audio/${filename}`);
-      audio.preload = "auto";
-      return audio;
-    });
   };
 
   const backToMenu = () => {
@@ -165,11 +165,16 @@ const App = () => {
 
   const handleCatch = (id, clientX, clientY) => {
     if (gameState !== 'playing') return;
-    if (audioRefs.current.length > 0) {
-      const randomIndex = Math.floor(Math.random() * audioRefs.current.length);
-      const playInstance = audioRefs.current[randomIndex].cloneNode();
+    
+    // Play Cached Audio Instantly
+    const sounds = currentLetter.sounds;
+    const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
+    const cachedAudio = audioRefs.current[randomSound];
+    if (cachedAudio) {
+      const playInstance = cachedAudio.cloneNode();
       playInstance.play().catch(() => {});
     }
+
     setElements((prev) => prev.filter((l) => l.id !== id));
     setScore((prev) => prev + 1);
     const newFloatingText = { id: Date.now(), x: clientX, y: clientY };
@@ -214,7 +219,7 @@ const App = () => {
           @keyframes slideUp { 0% { transform: translateY(40px); opacity: 0; } 20% { transform: translateY(0); opacity: 1; } 80% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-40px); opacity: 0; } }
           @keyframes rotateShamsa { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
           @keyframes hitPulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
-          @keyframes whackUp { 0% { transform: translateY(100%); } 15% { transform: translateY(5%); } 85% { transform: translateY(5%); } 100% { transform: translateY(100%); } }
+          @keyframes whackUp { 0% { transform: translateY(100%); } 15% { transform: translateY(0%); } 85% { transform: translateY(0%); } 100% { transform: translateY(100%); } }
           @keyframes runLeft { 0% { transform: translateX(100vw); } 100% { transform: translateX(-150px); } }
           @keyframes floatUp { 0% { transform: translateY(100vh) scale(0.8); } 100% { transform: translateY(-150px) scale(1.2); } }
           .letter-fall { animation: fall linear forwards; }
@@ -236,18 +241,18 @@ const App = () => {
         `}
       </style>
 
-      {/* SPLASH SCREEN */}
+      {/* SPLASH SCREEN (Large fitting logo) */}
       {gameState === 'splash' && (
-        <div className="absolute inset-0 z-[500] flex flex-col items-center justify-center bg-[#F5F5DC] overflow-hidden">
+        <div className="absolute inset-0 z-[500] flex flex-col items-center justify-center bg-[#F5F5DC] overflow-hidden p-4">
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.05] pointer-events-none scale-[2]">
              <div className="relative w-96 h-96 shamsa-medallion rounded-full animate-[rotateShamsa_120s_linear_infinite]" />
           </div>
-          <img src="/logo.png" className="w-48 h-auto mb-12 contrast-125 z-10" />
-          <button onClick={() => { setGameState('menu'); bgMusicRef.current?.play().catch(() => {}); }} className="group relative px-20 py-8 bg-[#800000] text-[#D4AF37] text-4xl font-black rounded-[2.5rem] shadow-2xl border-4 border-[#D4AF37] z-[510] tracking-widest italic uppercase active:scale-95 transition-transform">ENTER HUB</button>
+          <img src="/logo.png" className="w-full max-w-2xl h-auto mb-16 contrast-125 z-10" />
+          <button onClick={() => { setGameState('menu'); bgMusicRef.current?.play().catch(() => {}); }} className="group relative px-24 py-10 bg-[#800000] text-[#D4AF37] text-5xl font-black rounded-[3rem] shadow-2xl border-4 border-[#D4AF37] z-[510] tracking-widest italic uppercase active:scale-95 transition-transform">ENTER HUB</button>
         </div>
       )}
 
-      {/* DASHBOARD (Order Fixed) */}
+      {/* DASHBOARD (Alphabetical Order) */}
       {gameState === 'menu' && (
         <div className="absolute inset-0 z-[100] flex flex-col items-center justify-start p-8 bg-[#F5F5DC] overflow-y-auto scroll-smooth pb-32">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none scale-150">
@@ -285,10 +290,6 @@ const App = () => {
       {/* GAMEPLAY ENGINE */}
       {gameState === 'playing' && (
         <div className={`absolute inset-0 bg-gradient-to-br ${currentLetter?.bg}`}>
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] scale-150">
-             <span className="text-[80vh] font-black text-white arabic-font">{currentLetter?.char}</span>
-          </div>
-
           <button onClick={backToMenu} className="absolute top-8 left-8 z-[110] bg-white/10 p-4 rounded-3xl text-white backdrop-blur-lg border border-white/20">
             <ChevronLeft size={28} />
           </button>
@@ -317,7 +318,7 @@ const App = () => {
           {/* ENGINE: SAND WHACK (Natural Hole Pop-up) */}
           {currentLetter.mode === 'whack' && (
             <div className="absolute inset-0 flex items-center justify-center p-4">
-              <div className="grid grid-cols-3 grid-rows-3 gap-10 w-full max-w-lg aspect-square overflow-visible">
+              <div className="grid grid-cols-3 grid-rows-3 gap-10 w-full max-w-lg aspect-square">
                 {[...Array(9)].map((_, i) => {
                   const el = elements.find(e => e.holeIndex === i);
                   return (
@@ -401,7 +402,7 @@ const App = () => {
         </div>
       )}
 
-      {/* BRANDING LOGO */}
+      {/* BRANDING LOGO (Watermark) */}
       <div className={`absolute bottom-8 left-8 z-[1000] transition-all duration-500 ${gameState === 'playing' ? 'opacity-[0.01] pointer-events-none' : 'opacity-[0.05]'}`}>
         <a href="https://api.whatsapp.com/send/?phone=201554712241&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
           <img src="/logo.png" className="w-24 h-auto mb-2 contrast-125 hover:scale-105 transition-transform" />
