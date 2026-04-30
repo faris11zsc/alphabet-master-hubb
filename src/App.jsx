@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Play, RotateCcw, Heart, Star, Trophy, Zap, ChevronLeft } from 'lucide-react';
+import { Play, RotateCcw, Heart, Star, Trophy, Zap, ChevronLeft, Award } from 'lucide-react';
 
 // ==========================================
 // 4-MODE ALPHABET CONFIGURATION
 // ==========================================
-// Distribution strategy: Separating similar-looking letters across different modes.
 const LETTER_CONFIG = {
-  // MODE: RAIN (Falling Down)
+  // MODE: RAIN
   'hamza': { char: 'أ', mode: 'rain', shapes: ['أ', 'ـأ', 'إ'], sounds: ['ءا.m4a', 'ءو.m4a', 'ءي.m4a'], bg: "from-sky-700 via-blue-800 to-indigo-950", accent: "text-blue-600" },
   'ba': { char: 'ب', mode: 'rain', shapes: ['بـ', 'ـبـ', 'ـب'], sounds: ['ب.m4a', 'بو.m4a', 'بي.m4a'], bg: "from-emerald-700 via-green-800 to-teal-950", accent: "text-green-600" },
   'jeem': { char: 'ج', mode: 'rain', shapes: ['جـ', 'ـجـ', 'ـج'], sounds: ['جا.m4a', 'جو.m4a', 'جي.m4a'], bg: "from-orange-700 via-amber-800 to-yellow-950", accent: "text-amber-600" },
@@ -15,16 +14,16 @@ const LETTER_CONFIG = {
   'seen': { char: 'س', mode: 'rain', shapes: ['سـ', 'ـسـ', 'ـس'], sounds: ['س.m4a', 'سو.m4a', 'سي.m4a'], bg: "from-blue-700 via-indigo-800 to-violet-950", accent: "text-indigo-700" },
   'sad': { char: 'ص', mode: 'rain', shapes: ['صـ', 'ـصـ', 'ـص'], sounds: ['صا.m4a', 'صو.m4a', 'صي.m4a'], bg: "from-stone-700 via-stone-900 to-black", accent: "text-stone-700" },
 
-  // MODE: WHACK (Popping Up)
+  // MODE: WHACK
   'ta': { char: 'ت', mode: 'whack', shapes: ['تـ', 'ـتـ', 'ـت'], sounds: ['تا.m4a', 'تو.m4a', 'تي.m4a'], bg: "from-rose-700 via-red-800 to-orange-950", accent: "text-red-600" },
   'haa': { char: 'ح', mode: 'whack', shapes: ['حـ', 'ـحـ', 'ـح'], sounds: ['حا.m4a', 'حو.m4a', 'حي.m4a'], bg: "from-teal-700 via-cyan-800 to-blue-900", accent: "text-cyan-600" },
   'thal': { char: 'ذ', mode: 'whack', shapes: ['ذ', 'ـذ', 'ذ'], sounds: ['ذا.m4a', 'ذو.m4a', 'ذي.m4a'], bg: "from-yellow-600 via-orange-700 to-amber-900", accent: "text-orange-700" },
   'zay': { char: 'ز', mode: 'whack', shapes: ['ز', 'ـز', 'ز'], sounds: ['زا.m4a', 'زو.m4a', 'زي.m4a'], bg: "from-green-700 via-teal-800 to-cyan-950", accent: "text-teal-800" },
   'sheen': { char: 'ش', mode: 'whack', shapes: ['شـ', 'ـشـ', 'ـش'], sounds: ['شا.m4a', 'شو.m4a', 'شي.m4a'], bg: "from-violet-700 via-purple-800 to-fuchsia-950", accent: "text-purple-700" },
-  'dad': { char: 'ض', mode: 'whack', shapes: ['ضـ', 'ـضـ', 'ـض'], sounds: ['ضا.m4a', 'ضو.m4a', 'ضي.m4a'], bg: "from-emerald-800 via-green-950 to-black", accent: "text-green-900" },
-  'taa': { char: 'ط', mode: 'whack', shapes: ['طـ', 'ـطـ', 'ـط'], sounds: ['طا.m4a', 'طو.m4a', 'طي.m4a'], bg: "from-amber-800 via-orange-900 to-red-950", accent: "text-orange-900" },
+  'dad': { char: 'ض', mode: 'whack', shapes: ['ضـ', 'ـضـ', 'ـض'], sounds: ['ضا.m4a', 'ضو.m4a', 'ضي.m4a'], bg: "from-emerald-600 via-green-800 to-black", accent: "text-green-900" },
+  'taa': { char: 'ط', mode: 'whack', shapes: ['طـ', 'ـطـ', 'ـط'], sounds: ['طا.m4a', 'طو.m4a', 'طي.m4a'], bg: "from-amber-800 via-orange-700 to-red-950", accent: "text-orange-900" },
 
-  // MODE: RUNNER (Right to Left)
+  // MODE: RUNNER
   'tha': { char: 'ث', mode: 'runner', shapes: ['ثـ', 'ـثـ', 'ـث'], sounds: ['ثا.m4a', 'ثو.m4a', 'ثي.m4a'], bg: "from-purple-700 via-indigo-800 to-black", accent: "text-indigo-600" },
   'kha': { char: 'خ', mode: 'runner', shapes: ['خـ', 'ـخـ', 'ـخ'], sounds: ['خا.m4a', 'خو.m4a', 'خي.m4a'], bg: "from-slate-800 via-slate-900 to-black", accent: "text-slate-800" },
   'zaa': { char: 'ظ', mode: 'runner', shapes: ['ظـ', 'ـظـ', 'ـظ'], sounds: ['ظا.m4a', 'ظو.m4a', 'ظي.m4a'], bg: "from-orange-900 via-stone-900 to-black", accent: "text-stone-900" },
@@ -33,14 +32,14 @@ const LETTER_CONFIG = {
   'kaf': { char: 'ك', mode: 'runner', shapes: ['كـ', 'ـكـ', 'ـك'], sounds: ['كا.m4a', 'كو.m4a', 'كي.m4a'], bg: "from-blue-600 via-blue-800 to-black", accent: "text-blue-700" },
   'lam': { char: 'ل', mode: 'runner', shapes: ['لـ', 'ـلـ', 'ـل'], sounds: ['لَ.m4a', 'لو.m4a', 'لي.m4a'], bg: "from-cyan-700 via-blue-800 to-black", accent: "text-blue-600" },
 
-  // MODE: LANTERN (Bottom to Top)
+  // MODE: LANTERN
   'ghayn': { char: 'غ', mode: 'lantern', shapes: ['غـ', 'ـغـ', 'ـغ'], sounds: ['غا.m4a', 'غو.m4a', 'غي.m4a'], bg: "from-indigo-700 via-purple-900 to-black", accent: "text-purple-900" },
   'qaf': { char: 'ق', mode: 'lantern', shapes: ['قـ', 'ـقـ', 'ـق'], sounds: ['ققا.m4a', 'قو.m4a', 'قي.m4a'], bg: "from-red-800 via-red-950 to-black", accent: "text-red-900" },
   'meem': { char: 'م', mode: 'lantern', shapes: ['مـ', 'ـمـ', 'ـم'], sounds: ['ما.m4a', 'مو.m4a', 'مي.m4a'], bg: "from-violet-700 via-fuchsia-900 to-black", accent: "text-fuchsia-800" },
   'noon': { char: 'ن', mode: 'lantern', shapes: ['نـ', 'ـنـ', 'ـن'], sounds: ['نا.m4a', 'نو.m4a', 'ني.m4a'], bg: "from-green-700 via-emerald-900 to-black", accent: "text-emerald-800" },
   'haa2': { char: 'ه', mode: 'lantern', shapes: ['هـ', 'ـهـ', 'ـه'], sounds: ['ها.m4a', 'هو.m4a', 'هي.m4a'], bg: "from-orange-600 via-yellow-700 to-black", accent: "text-yellow-700" },
   'waw': { char: 'و', mode: 'lantern', shapes: ['و', 'ـو', 'و'], sounds: ['وا.m4a', 'وو.m4a', 'وي.m4a'], bg: "from-blue-800 via-indigo-950 to-black", accent: "text-indigo-800" },
-  'yaa': { char: 'ي', mode: 'lantern', shapes: ['يـ', 'ـيـ', 'ـي'], sounds: ['ي.m4a', 'يو.m4a', 'يي.m4a'], bg: "from-teal-600 via-emerald-900 to-black", accent: "text-teal-800" },
+  'yaa': { char: 'ي', shapes: ['يـ', 'ـيـ', 'ـي'], sounds: ['ي.m4a', 'يو.m4a', 'يي.m4a'], bg: "from-teal-600 via-emerald-900 to-black", accent: "text-teal-800" },
 };
 
 const App = () => {
@@ -52,12 +51,13 @@ const App = () => {
   const [floatingTexts, setFloatingTexts] = useState([]);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-
-  const [highScore, setHighScore] = useState(() => {
+  
+  // Storage for all high scores per letter
+  const [scores, setScores] = useState(() => {
     try {
-      const saved = localStorage.getItem('alphabetHighScore');
-      return saved ? parseInt(saved, 10) : 0;
-    } catch (e) { return 0; }
+      const saved = localStorage.getItem('alphabetMasterScores');
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) { return {}; }
   });
 
   const audioRefs = useRef([]);
@@ -127,7 +127,6 @@ const App = () => {
     setSelectedLetterKey(null);
   };
 
-  // --- MULTI-ENGINE SPAWNER ---
   useEffect(() => {
     if (gameState !== 'playing') return;
     const spawnInterval = setInterval(() => {
@@ -144,7 +143,6 @@ const App = () => {
         } else if (currentLetter.mode === 'lantern') {
           return [...prev, { id, left: Math.floor(Math.random() * 80) + 10, shape, duration: currentLevel.speed * 1.8, type: 'lantern' }];
         } else {
-          // Rain mode
           return [...prev, { id, left: Math.floor(Math.random() * 80) + 10, shape, duration: currentLevel.speed, type: 'rain' }];
         }
       });
@@ -157,7 +155,7 @@ const App = () => {
             if (el) handleMiss(el.id);
             return prev;
           });
-        }, currentLevel.speed * 1200); // Allow more time for whack visibility
+        }, currentLevel.speed * 1200);
       }
     }, currentLevel.spawnRate);
     return () => clearInterval(spawnInterval);
@@ -188,7 +186,19 @@ const App = () => {
       if (!exists) return prev;
       setLives((l) => {
         const newLives = l - 1;
-        if (newLives <= 0) setGameState('gameover');
+        if (newLives <= 0) {
+          setGameState('gameover');
+          // Update high scores for this specific letter
+          setScores(prev => {
+            const currentBest = prev[selectedLetterKey] || 0;
+            if (score > currentBest) {
+              const newScores = { ...prev, [selectedLetterKey]: score };
+              localStorage.setItem('alphabetMasterScores', JSON.stringify(newScores));
+              return newScores;
+            }
+            return prev;
+          });
+        }
         return newLives;
       });
       return prev.filter((l) => l.id !== id);
@@ -246,12 +256,22 @@ const App = () => {
             <div className="h-1 w-48 bg-[#D4AF37] mx-auto rounded-full" />
           </div>
           <div className="grid grid-cols-4 md:grid-cols-7 gap-6 w-full max-w-5xl relative z-10">
-            {Object.keys(LETTER_CONFIG).map((key) => (
-              <button key={key} onClick={() => startGame(key)} className="aspect-square bg-[#008080]/10 hover:bg-[#008080]/20 border border-[#D4AF37]/30 rounded-3xl flex flex-col items-center justify-center transition-all transform hover:scale-105 active:scale-90 group shadow-lg">
-                <span className="text-5xl font-bold text-[#800000] group-hover:text-[#40E0D0] transition-colors arabic-font drop-shadow-sm uppercase">{LETTER_CONFIG[key].char}</span>
-                <span className="text-[9px] text-stone-500 uppercase mt-2 font-black tracking-widest">{key}</span>
-              </button>
-            ))}
+            {Object.keys(LETTER_CONFIG).map((key) => {
+              const letterScore = scores[key] || 0;
+              const isMastered = letterScore >= 70;
+              return (
+                <button key={key} onClick={() => startGame(key)} className="aspect-square bg-[#008080]/10 hover:bg-[#008080]/20 border border-[#D4AF37]/30 rounded-3xl flex flex-col items-center justify-center transition-all transform hover:scale-105 active:scale-90 group shadow-lg relative overflow-hidden">
+                  {isMastered && (
+                    <div className="absolute top-1 right-1">
+                      <Star size={16} className="text-yellow-500 fill-yellow-500" />
+                    </div>
+                  )}
+                  <span className="text-5xl font-bold text-[#800000] group-hover:text-[#40E0D0] transition-colors arabic-font drop-shadow-sm uppercase">{LETTER_CONFIG[key].char}</span>
+                  <span className="text-[9px] text-stone-500 uppercase mt-2 font-black tracking-widest">{key}</span>
+                  {letterScore > 0 && <span className="text-[8px] text-stone-400 font-bold mt-1">Best: {letterScore}</span>}
+                </button>
+              );
+            })}
           </div>
           <div className="h-[60vh] w-full shrink-0" />
         </div>
@@ -376,13 +396,13 @@ const App = () => {
       {/* GAME OVER */}
       {gameState === 'gameover' && (
         <div className="absolute inset-0 z-[600] flex items-center justify-center bg-black/95 backdrop-blur-3xl p-6">
-          <div className="bg-white p-12 rounded-[3.5rem] text-center max-w-sm w-full shadow-2xl border-b-[12px] border-slate-200">
+          <div className="bg-white p-12 rounded-[3.5rem] text-center max-w-sm w-full shadow-[0_20px_60px_rgba(0,0,0,0.8)] border-b-[12px] border-slate-200">
             <h2 className="text-5xl font-black text-slate-800 mb-6 tracking-tighter italic uppercase">GAME OVER</h2>
             <div className="bg-slate-50 p-8 rounded-[2.5rem] mb-10 shadow-inner">
               <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] mb-2">Final Score</p>
               <p className="text-7xl font-black text-slate-900 leading-none">{score}</p>
               <div className="h-px bg-slate-200 w-full my-6" />
-              <p className="flex justify-center items-center gap-2 text-slate-500 font-bold"><Trophy size={18} className="text-amber-500 fill-amber-500" />Best: {highScore}</p>
+              <p className="flex justify-center items-center gap-2 text-slate-500 font-bold"><Trophy size={18} className="text-amber-500 fill-amber-500" />Letter Best: {scores[selectedLetterKey] || score}</p>
             </div>
             <button onClick={() => startGame(selectedLetterKey)} className="w-full bg-slate-900 hover:bg-black text-white py-6 rounded-3xl text-2xl font-black shadow-xl transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3 mb-4"><RotateCcw size={24} /> TRY AGAIN</button>
             <button onClick={backToMenu} className="w-full text-slate-400 font-black uppercase tracking-widest text-[10px] hover:text-slate-600 transition-colors">Return to Menu</button>
@@ -391,7 +411,7 @@ const App = () => {
       )}
 
       {/* BRANDING LOGO */}
-      <div className={`absolute bottom-8 left-8 z-[1000] transition-all duration-500 ${gameState === 'playing' ? 'opacity-[0.01] pointer-events-none' : 'opacity-30'}`}>
+      <div className={`absolute bottom-8 left-8 z-[1000] transition-all duration-500 ${gameState === 'playing' ? 'opacity-[0.01] pointer-events-none' : 'opacity-[0.15]'}`}>
         <a href="https://api.whatsapp.com/send/?phone=201554712241&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
           <img src="/logo.png" className="w-24 h-auto mb-2 contrast-125 hover:scale-105 transition-transform" />
         </a>
